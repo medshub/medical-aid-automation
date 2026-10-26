@@ -156,7 +156,7 @@ export default function IntakeOpsPage() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="aid-section-label">Step 1 of 5 · Queue</p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Queue</h1>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Queue</h1>
               <p className="text-sm text-slate-600 mt-0.5" dir="rtl">
                 طابور الطلبات · عالج ثم انتقل للمطالبات
               </p>
