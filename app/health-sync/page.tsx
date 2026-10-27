@@ -19,7 +19,9 @@ export default async function HealthSyncPage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <header className="flex flex-wrap justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">Health data sync</h1>
+            <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+              Health data sync
+            </h1>
             <p className="text-sm text-slate-600">
               Form → Approved sheet → Neon programs (automated)
             </p>
