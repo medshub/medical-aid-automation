@@ -43,7 +43,9 @@ export default async function ReportsPage({
               <p className="text-xs text-violet-600 font-medium">
                 More tools · Reports
               </p>
-              <h1 className="text-2xl font-semibold">تقارير الأدوية</h1>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+                Medicine reports · تقارير الأدوية
+              </h1>
               <p className="text-sm text-slate-600">
                 Monthly dispense · chronic catalog · CSV · {period}
               </p>
