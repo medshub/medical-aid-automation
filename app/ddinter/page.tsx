@@ -29,7 +29,7 @@ export default async function DdinterPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 Clinical tools · DDInter
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">DDInter 2.0</h1>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">DDInter 2.0</h1>
               <p className="text-sm text-slate-600" dir="rtl">
                 تفاعلات دوائية · استيراد محلي
               </p>
