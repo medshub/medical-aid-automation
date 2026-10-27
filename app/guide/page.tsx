@@ -107,15 +107,28 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Pharmacy',
     titleAr: 'الصيدلية',
     bodyEn:
-      'Choose Available at EVA or Not at EVA. Download CSV for each route. Check safety flags before bulk dispense.',
+      'Choose Available at EVA or Not at EVA. Download period CSV for each route. Check safety flags before bulk dispense. For a full active-line cut (not only this period), use EVA split.',
     bodyAr:
-      'اختر متوفر في إيفا أو غير متوفر. حمّل CSV لكل مسار. راجع تنبيهات السلامة قبل الصرف الجماعي.',
+      'اختر متوفر في إيفا أو غير متوفر. حمّل CSV للشهر. راجع السلامة قبل الصرف. للقطع الكامل من البرامج النشطة استخدم تقسيم إيفا.',
     href: '/pharmacy',
     cta: 'Open Pharmacy',
     mock: 'pharmacy',
   },
   {
     n: 4,
+    id: 'staff-3b',
+    titleEn: 'EVA split (optional)',
+    titleAr: 'تقسيم إيفا',
+    bodyEn:
+      'One-click CSV downloads for all active program lines — warehouse (EVA) vs external (Not EVA). Same formulary cut as Pharmacy.',
+    bodyAr:
+      'تصدير CSV بنقرة لكل بنود البرامج النشطة — مستودع إيفا مقابل خارج إيفا.',
+    href: '/eva-split',
+    cta: 'Open EVA split',
+    mock: 'none',
+  },
+  {
+    n: 5,
     id: 'staff-4',
     titleEn: 'Programs',
     titleAr: 'البرامج',
@@ -128,7 +141,7 @@ const STAFF_STEPS: Step[] = [
     mock: 'none',
   },
   {
-    n: 5,
+    n: 6,
     id: 'staff-5',
     titleEn: 'Refills',
     titleAr: 'الصرف الشهري',
@@ -164,7 +177,7 @@ const MORE_TOOLS = [
     href: '/eva-split',
     title: 'EVA split',
     titleAr: 'تقسيم إيفا',
-    body: 'Counts for Available vs Not Eva.',
+    body: 'One-click CSV · EVA vs Not EVA (all active lines).',
   },
   {
     href: '/reports',
@@ -267,7 +280,7 @@ export default function GuidePage() {
           </p>
           <p className="text-sm text-slate-500 max-w-lg mx-auto">
             Submit → track status → open your profile for renewals and replies. Staff follow Queue →
-            Claims → Pharmacy → Programs → Refills.
+            Claims → Pharmacy → EVA split → Programs → Refills.
           </p>
         </header>
 
@@ -352,7 +365,7 @@ export default function GuidePage() {
               لفريق التشغيل — نفس الشريط المرقّم في الصفحات
             </p>
             <p className="mt-3 text-xs sm:text-sm font-semibold text-violet-900">
-              Admin → Queue → Claims → Pharmacy → Programs → Refills
+              Admin → Queue → Claims → Pharmacy → EVA split → Programs → Refills
             </p>
           </div>
 
