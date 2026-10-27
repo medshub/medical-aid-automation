@@ -33,7 +33,7 @@ export default async function FormularyPage({
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 More tools · Formulary
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Medicine formulary
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
