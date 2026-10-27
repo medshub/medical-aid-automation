@@ -94,3 +94,34 @@ print('catalog:', checks.get('egyptian_catalog', {}).get('detail'))
 print('formulary:', checks.get('formulary', {}).get('detail'))
 print('estimate sample total_egp=', json.load(open('/tmp/est.json')).get('total_egp'))
 PY
+
+      # Optional: set GitHub secret SMOKE_PROCESS_SECRET = same value as Vercel PROCESS_SECRET
+      - name: Staff APIs (optional)
+        env:
+          SMOKE_PROCESS_SECRET: ${{ secrets.SMOKE_PROCESS_SECRET }}
+        run: |
+          set -e
+          if [ -z "$SMOKE_PROCESS_SECRET" ]; then
+            echo "Skip staff smoke — set repo secret SMOKE_PROCESS_SECRET to enable"
+            exit 0
+          fi
+          URL="${{ secrets.SMOKE_BASE_URL }}"
+          if [ -z "$URL" ]; then URL="https://medical-aid-automation.vercel.app"; fi
+          HDR=(-H "x-process-secret: $SMOKE_PROCESS_SECRET")
+
+          code=$(curl -sS -o /tmp/org-stats.json -w "%{http_code}" "${HDR[@]}" "$URL/api/admin/org-stats")
+          echo "/api/admin/org-stats (staff) -> $code"
+          test "$code" = "200"
+          python3 -c "import json; d=json.load(open('/tmp/org-stats.json')); assert d.get('ok') is not False"
+
+          code=$(curl -sS -o /tmp/audit.json -w "%{http_code}" "${HDR[@]}" "$URL/api/admin/audit?limit=5")
+          echo "/api/admin/audit (staff) -> $code"
+          test "$code" = "200"
+
+          # Staff HTML surfaces should not bounce to home lock
+          for path in /pharmacy /programs /refills /status; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" -H "x-process-secret: $SMOKE_PROCESS_SECRET" "$URL$path")
+            echo "$path (staff) -> $code"
+            test "$code" = "200"
+          done
+          echo "staff smoke ok"
