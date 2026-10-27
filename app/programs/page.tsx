@@ -7,19 +7,181 @@ import { isWhoAssessmentEnabled } from '@/lib/featureFlags';
 
 export const dynamic = 'force-dynamic';
 
-// RESTORED - full content will follow in next commit if truncated
-export default async function ProgramsPage() {
+type ProgramRow = {
+  id: string;
+  program_code: string;
+  status: string;
+  external_employee_id?: string;
+  employee_name?: string;
+  patient_name?: string;
+  relation?: string;
+  med_count?: number;
+  refill_count?: number;
+  doc_count?: number;
+  latest_risk?: string | null;
+};
+
+function statusStyle(s: string) {
+  if (s === 'active') return 'bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200';
+  if (s === 'suspended') return 'bg-amber-100 text-amber-900 ring-1 ring-amber-200';
+  if (s === 'cancelled' || s === 'expired') return 'bg-slate-200 text-slate-700 ring-1 ring-slate-300';
+  return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
+}
+
+function riskStyle(s?: string | null) {
+  if (s === 'critical') return 'bg-red-100 text-red-900 ring-1 ring-red-200';
+  if (s === 'high') return 'bg-orange-100 text-orange-950 ring-1 ring-orange-200';
+  if (s === 'medium') return 'bg-amber-100 text-amber-900 ring-1 ring-amber-200';
+  if (s === 'low') return 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100';
+  return 'bg-slate-50 text-slate-500 ring-1 ring-slate-100';
+}
+
+function riskRank(s?: string | null) {
+  if (s === 'critical') return 0;
+  if (s === 'high') return 1;
+  if (s === 'medium') return 2;
+  if (s === 'low') return 3;
+  return 4;
+}
+
+export default async function ProgramsPage({
+  searchParams,
+}: {
+  searchParams: { q?: string; status?: string; risk?: string };
+}) {
+  let rows: ProgramRow[] = [];
+  let error: string | null = null;
+  const q = (searchParams.q || '').trim();
+  const status = (searchParams.status || '').trim();
+  const risk = (searchParams.risk || '').trim();
+  const whoOn = isWhoAssessmentEnabled();
+
+  try {
+    const params: unknown[] = [];
+    const where: string[] = [];
+    if (status) {
+      params.push(status);
+      where.push(`cp.status = $${params.length}`);
+    }
+    if (q) {
+      params.push(`%${q}%`);
+      const i = params.length;
+      where.push(
+        `(cp.program_code ILIKE $${i} OR e.full_name ILIKE $${i} OR e.external_employee_id ILIKE $${i} OR d.full_name ILIKE $${i})`
+      );
+    }
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const res = await query(
+      `SELECT cp.id, cp.program_code, cp.status,
+         e.external_employee_id, e.full_name AS employee_name,
+         d.full_name AS patient_name, d.relation,
+         (SELECT count(*)::int FROM chronic_med_lines m WHERE m.program_id = cp.id AND m.is_active) AS med_count,
+         (SELECT count(*)::int FROM refill_cycles rc WHERE rc.program_id = cp.id) AS refill_count,
+         (SELECT count(*)::int FROM attachments a WHERE a.entity_type = 'program' AND a.entity_id = cp.id) AS doc_count,
+         (SELECT risk_band FROM adherence_assessments aa WHERE aa.program_id = cp.id ORDER BY assessed_at DESC LIMIT 1) AS latest_risk
+       FROM chronic_programs cp
+       JOIN employees e ON e.id = cp.employee_id
+       JOIN dependents d ON d.id = cp.dependent_id
+       ${whereSql}
+       ORDER BY cp.program_code`,
+      params
+    );
+    rows = res.rows as ProgramRow[];
+    if (whoOn) {
+      rows = [...rows].sort((a, b) => {
+        const d = riskRank(a.latest_risk) - riskRank(b.latest_risk);
+        if (d !== 0) return d;
+        return (a.program_code || '').localeCompare(b.program_code || '');
+      });
+      if (risk === 'high') rows = rows.filter((r) => r.latest_risk === 'high' || r.latest_risk === 'critical');
+      else if (risk === 'unassessed') rows = rows.filter((r) => !r.latest_risk);
+      else if (risk) rows = rows.filter((r) => r.latest_risk === risk);
+    }
+  } catch (e: unknown) {
+    error = e instanceof Error ? e.message : 'Failed to load programs';
+  }
+
+  const activeCount = rows.filter((r) => r.status === 'active').length;
+  const suspendedCount = rows.filter((r) => r.status === 'suspended').length;
+  const highRiskCount = whoOn
+    ? rows.filter((r) => r.latest_risk === 'high' || r.latest_risk === 'critical').length
+    : 0;
+
   return (
-    <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28">
+    <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
       <div className="mx-auto max-w-5xl space-y-5">
-        <FlowSteps current={5} />
-        <h1 className="aid-display text-3xl font-semibold">Programs</h1>
-        <p className="text-sm text-amber-800">
-          Restoring full page — if you see this briefly, refresh in a minute.
-        </p>
-        <a href="/eva-split" className="text-violet-700 underline">← EVA</a>
-        {' · '}
-        <a href="/refills" className="text-violet-700 underline">Refills →</a>
+        <header className="space-y-3">
+          <FlowSteps current={5} />
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="aid-section-label">Step 5 of 6 · Programs</p>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Programs</h1>
+              <p className="text-sm text-slate-600" dir="rtl">البرامج المزمنة · بعد المعالجة</p>
+            </div>
+            <div className="hidden sm:flex flex-wrap gap-2 text-sm">
+              <Link href="/eva-split" className="rounded-xl border border-white/80 bg-white/90 px-3 py-2 font-medium hover:bg-white backdrop-blur">
+                ← EVA
+              </Link>
+              <Link href="/refills" className="aid-cta-violet px-4 py-2 text-sm">Next: Refills →</Link>
+            </div>
+          </div>
+        </header>
+
+        <div className={`grid gap-2 text-center ${whoOn ? 'grid-cols-4' : 'grid-cols-3'}`}>
+          <div className="aid-kpi"><p className="text-xl font-bold text-slate-900">{rows.length}</p><p className="text-[11px] text-slate-500">shown</p></div>
+          <div className="aid-kpi"><p className="text-xl font-bold text-emerald-800">{activeCount}</p><p className="text-[11px] text-slate-500">active</p></div>
+          <div className="aid-kpi"><p className="text-xl font-bold text-amber-800">{suspendedCount}</p><p className="text-[11px] text-slate-500">suspended</p></div>
+          {whoOn && (
+            <div className="aid-kpi"><p className="text-xl font-bold text-orange-800">{highRiskCount}</p><p className="text-[11px] text-slate-500">high risk</p></div>
+          )}
+        </div>
+
+        <form method="get" className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm flex flex-wrap gap-2 items-center backdrop-blur">
+          <input name="q" defaultValue={q} placeholder="Search name, emp ID, program code…" className="flex-1 min-w-[200px] rounded-xl border border-slate-200 px-4 py-2.5 text-base" />
+          <FormSelectPicker name="status" defaultValue={status} options={PROGRAM_STATUS_OPTIONS} allowCreate={false} placeholder="Status…" className="min-w-[160px]" />
+          {whoOn && risk ? <input type="hidden" name="risk" value={risk} /> : null}
+          <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white">Search</button>
+        </form>
+
+        {error && (
+          <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm">
+            <strong>Could not load:</strong> {error}
+          </div>
+        )}
+
+        {!error && rows.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-white/80 p-8 text-center text-sm text-slate-500">
+            <p className="font-medium text-slate-700">No programs yet</p>
+            <p className="text-xs mt-1">Process intake on the <Link href="/intake-ops" className="text-violet-700 underline">queue</Link>.</p>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {rows.map((r) => (
+            <Link key={r.id} href={`/programs/${r.id}`} className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur">
+              <div className="flex justify-between gap-2">
+                <p className="font-semibold text-slate-900 truncate">{r.patient_name || '—'}</p>
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full h-fit ${statusStyle(r.status)}`}>{r.status}</span>
+              </div>
+              <p className="text-xs text-slate-500">{r.employee_name}{r.external_employee_id ? ` · ${r.external_employee_id}` : ''}</p>
+              <p className="text-[11px] font-mono text-violet-700">{r.program_code}</p>
+              <p className="text-xs text-slate-500">
+                {r.med_count ?? 0} meds · {r.refill_count ?? 0} refills
+                {(r.doc_count ?? 0) > 0 ? ` · ${r.doc_count} docs` : ''}
+                {whoOn && r.latest_risk ? (
+                  <span className={`ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(r.latest_risk)}`}>{r.latest_risk}</span>
+                ) : null}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="aid-sticky-bar">
+        <div className="mx-auto max-w-5xl flex gap-2">
+          <Link href="/eva-split" className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">← EVA</Link>
+          <Link href="/refills" className="aid-cta-violet flex-1 py-3 text-center text-sm">Refills →</Link>
+        </div>
       </div>
     </main>
   );
