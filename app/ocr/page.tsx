@@ -24,7 +24,7 @@ export default function OcrPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 Related to Queue · OCR
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Roshetta & invoice OCR
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
