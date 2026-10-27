@@ -21,7 +21,7 @@ export default async function RefillSafetyQueuePage() {
     <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
       <div className="mx-auto max-w-4xl space-y-6">
         <header className="space-y-3">
-          <FlowSteps current={5} />
+          <FlowSteps current={6} />
           <div className="flex flex-wrap justify-between gap-3">
             <div>
               <p className="aid-section-label">Clinical tools · Safety queue</p>
