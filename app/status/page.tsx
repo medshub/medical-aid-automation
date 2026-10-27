@@ -260,7 +260,13 @@ export default async function StatusPage() {
                 <Link href="/pharmacy" className="underline font-medium">
                   3 Pharmacy
                 </Link>{' '}
-                — EVA / Not EVA · CSV · batch dispense
+                — period pick-list · CSV · batch dispense
+              </li>
+              <li>
+                <Link href="/eva-split" className="underline font-medium">
+                  3b EVA split
+                </Link>{' '}
+                — one-click CSV · warehouse vs external
               </li>
               <li>
                 <Link href="/programs" className="underline font-medium">
