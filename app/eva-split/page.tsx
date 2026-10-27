@@ -41,11 +41,11 @@ export default async function EvaSplitPage({
     <main className="min-h-screen bg-slate-50 p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="space-y-3">
-          <FlowSteps current={3} />
+          <FlowSteps current={4} />
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
-                Related to Step 3 · Pharmacy
+                Step 4 of 6 · EVA split
               </p>
               <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 EVA split · تقسيم الاعتماد
@@ -56,16 +56,16 @@ export default async function EvaSplitPage({
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
               <Link
-                href="/claims"
+                href="/pharmacy"
                 className="rounded-xl border bg-white px-3 py-2 font-medium hover:bg-slate-50"
               >
-                ← Claims
+                ← Pharmacy
               </Link>
               <Link
-                href="/pharmacy"
-                className="rounded-xl bg-teal-600 px-3 py-2 font-semibold text-white hover:bg-teal-700"
+                href="/programs"
+                className="rounded-xl bg-violet-700 px-3 py-2 font-semibold text-white hover:bg-violet-800"
               >
-                Pharmacy →
+                Programs →
               </Link>
             </div>
           </div>
@@ -263,16 +263,16 @@ export default async function EvaSplitPage({
       <div className="fixed bottom-0 inset-x-0 z-20 border-t bg-white/95 backdrop-blur p-3 md:hidden">
         <div className="mx-auto max-w-6xl flex gap-2">
           <Link
-            href="/claims"
+            href="/pharmacy"
             className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
           >
-            ← Claims
+            ← Pharmacy
           </Link>
           <Link
-            href="/pharmacy"
-            className="flex-1 rounded-xl bg-teal-600 py-3 text-center text-sm font-semibold text-white"
+            href="/programs"
+            className="flex-1 rounded-xl bg-violet-700 py-3 text-center text-sm font-semibold text-white"
           >
-            Pharmacy →
+            Programs →
           </Link>
         </div>
       </div>
