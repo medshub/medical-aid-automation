@@ -244,6 +244,7 @@ export default async function AnalyticsPage({
                     <tr key={m.period} className="border-t">
                       <td className="p-3 font-mono">{m.period}</td>
                       <td className="p-3">{m.cycles}</td>
+                      <td className="p-3">{m.dispensed}</td>
                       <td className="p-3">{fmt(Math.round(m.est_egp))}</td>
                       <td className="p-3">{fmt(Math.round(m.approved_egp))}</td>
                     </tr>
