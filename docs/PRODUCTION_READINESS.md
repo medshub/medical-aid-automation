@@ -19,6 +19,7 @@
 - [x] **Org registration** public page + Admin approve/reject flow
 - [x] **Smoke workflow** health + public pages (every 6h + push)
 - [x] **Expanded smoke** — search_med (≥1 hit), estimate, status shape, anon 401, `/submit`, health asserts neon + egyptian_catalog + formulary + intake + process_secret
+- [x] **Optional staff smoke** — when GitHub secret `SMOKE_PROCESS_SECRET` is set (= Vercel `PROCESS_SECRET`), hits `/api/admin/org-stats`, `/api/admin/audit`, and staff pages `/pharmacy` `/programs` `/refills` `/status` with `x-process-secret`
 - [x] Staff session `org_scope` + memberships
 - [x] **Aida identity UX** — cream paper, forest green, serif titles on public surfaces
 - [x] **Aida staff/tool titles** — Queue → Pharmacy → Programs → Refills, Reports, WhatsApp, Status, Admin, Safety, Dry-run, EVA split, Inventory, PSP, Care Line, Documents, Roles, Review, Submit, DDInter, Health sync, PMS, Synonyms, Formulary, Requests, Refill safety, OCR, Analytics, Combinations, Visualize
@@ -44,7 +45,7 @@
 - [ ] Set `ORG_REGISTRATION_MODE=approval` when open registration should require review
 - [ ] Staging environment (Vercel Preview + Neon branch) — see `docs/STAGING.md`
 - [ ] Live WhatsApp credentials (Meta or Twilio) when outreach goes live
-- [ ] Expand smoke tests to authenticated ops paths (needs `SMOKE_PROCESS_SECRET` secret)
+- [ ] Enable staff smoke: GitHub → Settings → Secrets → `SMOKE_PROCESS_SECRET` (= production `PROCESS_SECRET`)
 - [ ] Row-level Neon policies if multi-tenant strictness is required beyond app filters
 
 ## Live health snapshot (typical)
@@ -68,3 +69,4 @@
 | Env gate | `ORG_REGISTRATION_MODE=approval` |
 | Staff Google setup | `docs/NEON_AUTH.md` |
 | Staging setup | `docs/STAGING.md` |
+| Staff smoke | Secret `SMOKE_PROCESS_SECRET` |
