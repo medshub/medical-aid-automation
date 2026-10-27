@@ -15,7 +15,9 @@ export default function SubmitGuidePage() {
     <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
       <div className="mx-auto max-w-xl space-y-6">
         <header className="space-y-1">
-          <h1 className="text-2xl font-semibold">تقديم طلب علاج شهري</h1>
+          <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+            Submit request · تقديم طلب علاج شهري
+          </h1>
           <p className="text-sm text-slate-600">
             Platform intake · MSH catalog · full cycle on Neon
           </p>
