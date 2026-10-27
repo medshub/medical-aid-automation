@@ -33,7 +33,9 @@ export default async function DocumentsPage({
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">نظام التوثيق الطبي</h1>
+            <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+              Medical documents · نظام التوثيق الطبي
+            </h1>
             <p className="text-sm text-slate-600">
               روشتات · تحاليل · كارنيه · فواتير · مرفقات البرامج المزمنة
             </p>
