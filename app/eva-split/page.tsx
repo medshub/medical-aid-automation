@@ -71,15 +71,41 @@ export default async function EvaSplitPage({
           </div>
         </header>
 
-        <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-950 space-y-1">
-          <p className="font-medium">How to use</p>
-          <p className="text-xs sm:text-sm">
-            Filter EVA or NOT EVA below → compare counts → for pharmacy routing
-            prefer <strong>Pharmacy</strong> page CSV · EVA / CSV · NOT EVA.
-          </p>
-          <p className="text-xs text-teal-800" dir="rtl">
-            صفّ إيفا / غير إيفا ← للتصدير استخدم شاشة الصيدلية
-          </p>
+        <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-950 space-y-3">
+          <div>
+            <p className="font-medium">Monthly pharmacy routing</p>
+            <p className="text-xs sm:text-sm mt-1">
+              Active program lines split by formulary. Download CSV for the
+              warehouse (EVA) vs external (NOT EVA), or open{' '}
+              <Link href="/pharmacy" className="font-semibold underline">
+                Pharmacy
+              </Link>{' '}
+              for period pick-lists and batch release.
+            </p>
+            <p className="text-xs text-teal-800 mt-1" dir="rtl">
+              تصدير CSV لإيفا / خارج إيفا · أو شاشة الصيدلية لقوائم الشهر
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`/api/eva-split?source=db&format=csv&bucket=EVA${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              className="rounded-xl bg-emerald-700 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              Download CSV · EVA ({eva.length})
+            </a>
+            <a
+              href={`/api/eva-split?source=db&format=csv&bucket=NOT_EVA${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              className="rounded-xl bg-slate-800 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-slate-900"
+            >
+              Download CSV · NOT EVA ({not_eva.length})
+            </a>
+            <a
+              href={`/api/eva-split?source=db&format=csv&bucket=all${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              className="rounded-xl border border-teal-600 bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-teal-900 hover:bg-teal-50"
+            >
+              Download CSV · all ({eva.length + not_eva.length})
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
