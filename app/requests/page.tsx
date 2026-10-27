@@ -57,7 +57,9 @@ export default async function RequestsPage({
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">تتبع حالة الطلبات</h1>
+            <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+              Request tracking · تتبع حالة الطلبات
+            </h1>
             <p className="text-sm text-slate-600">
               من التسجيل حتى الصرف · الفترة {period}
             </p>
