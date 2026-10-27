@@ -163,7 +163,9 @@ export default async function DryRunPage() {
               <p className="text-xs text-amber-700 font-medium">
                 Ops practice · no live pharmacy batch · WhatsApp dry-run only
               </p>
-              <h1 className="text-2xl font-semibold">Live dry-run script</h1>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+                Live dry-run script
+              </h1>
               <p className="text-sm text-slate-600" dir="rtl">
                 سيناريو تجريبي لهذا الشهر — بدون إرسال واتساب حقيقي من أزرار هذه الصفحة
               </p>
