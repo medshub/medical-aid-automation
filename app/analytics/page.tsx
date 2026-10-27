@@ -40,7 +40,7 @@ export default async function AnalyticsPage({
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 More tools · Analytics
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Medical analytics · تحليلات
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
