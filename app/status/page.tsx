@@ -204,7 +204,9 @@ export default async function StatusPage() {
       <div className="mx-auto max-w-lg space-y-6">
         <header className="space-y-2 text-center sm:text-left aid-rise">
           <p className="aid-section-label">Platform · Status</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">System status</h1>
+          <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+            System status
+          </h1>
           <p className="text-sm text-slate-600" dir="rtl">
             حالة النظام · هل المنصة جاهزة؟
           </p>
