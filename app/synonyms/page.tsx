@@ -28,7 +28,7 @@ export default async function SynonymsPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 Clinical tools · Synonyms
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Ingredient synonyms
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
