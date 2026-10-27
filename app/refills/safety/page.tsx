@@ -25,7 +25,7 @@ export default async function RefillSafetyQueuePage() {
           <div className="flex flex-wrap justify-between gap-3">
             <div>
               <p className="aid-section-label">Clinical tools · Safety queue</p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Refill safety queue
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
