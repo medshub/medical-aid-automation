@@ -20,7 +20,9 @@ export default async function PmsPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="flex flex-wrap justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">PMS · Patient Support Ops</h1>
+            <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+              PMS · Patient Support Ops
+            </h1>
             <p className="text-sm text-slate-600">
               Axios-aligned open model — journey · OTA · adherence · adverse events
             </p>
