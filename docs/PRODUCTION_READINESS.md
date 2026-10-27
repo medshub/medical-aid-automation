@@ -1,11 +1,11 @@
 # Production readiness assessment
 
-**Date:** 2026-10-21  
+**Date:** 2026-10-27  
 **App:** https://medical-aid-automation.vercel.app/
 
 ## Verdict
 
-**Production-grade for core chronic medicine support**, with multi-org isolation, audit trail, and abuse protections.
+**Production-grade for core chronic medicine support**, with multi-org isolation, audit trail, abuse protections, and a consistent **Aida** design system (cream paper, forest green CTAs, Fraunces/Manrope, `aid-display` titles).
 
 ## Hardening completed
 
@@ -21,6 +21,8 @@
 - [x] **Expanded smoke** — search_med, estimate, status shape, anon 401
 - [x] Staff session `org_scope` + memberships
 - [x] **Aida identity UX** — cream paper, forest green, serif titles on public surfaces
+- [x] **Aida staff/tool titles** — Queue → Pharmacy → Programs → Refills, Reports, WhatsApp, Status, Admin, Safety, Dry-run, EVA split, Inventory, PSP, Care Line, Documents, Roles, Review, Submit, DDInter, Health sync, PMS, Synonyms, Formulary, Requests, Refill safety, OCR, Analytics, Combinations, Visualize
+- [x] Detail pages keep **mono program codes** (`/programs/[id]`, `/refills/[id]`) by design
 - [x] **Three-door model** documented (`docs/schema/006_identity_data_flow.md`): public / employee / staff
 - [x] **Employee portal** privacy gate + staff message reply threads
 - [x] **Request status** optional verification unlocks full names; others masked; **Share / Copy link**
@@ -32,6 +34,9 @@
 - [x] **Admin access card** shows Google vs PROCESS_SECRET readiness
 - [x] **Home** surfaces estimate + share hints
 - [x] **Guide** covers estimate, share, and staff path
+- [x] **Neon** system of record · Egyptian drug catalog primary · MSH fallback
+- [x] Soft **DHIS2** hooks (optional HMIS)
+- [x] Feature flags: WHO assessment + AI adherence coach **off until management enables**
 
 ## Optional next
 
@@ -41,6 +46,16 @@
 - [ ] Live WhatsApp credentials (Meta or Twilio) when outreach goes live
 - [ ] Expand smoke tests to authenticated ops paths
 - [ ] Row-level Neon policies if multi-tenant strictness is required beyond app filters
+
+## Live health snapshot (typical)
+
+| Check | Expectation |
+|-------|-------------|
+| `/api/health` | `ok: true` |
+| Neon | Connected · chronic programs populated |
+| Egyptian catalog | ~25k drugs · MSH fallback |
+| Staff access | `PROCESS_SECRET` unlock (Google when Neon Auth set) |
+| WhatsApp | `mode=none` until provider env is set |
 
 ## Multi-org quick reference
 
