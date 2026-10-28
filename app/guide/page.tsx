@@ -116,8 +116,8 @@ const STAFF_STEPS: Step[] = [
   },
   {
     n: 4,
-    id: 'staff-3b',
-    titleEn: 'EVA split (optional)',
+    id: 'staff-4-eva',
+    titleEn: 'EVA split',
     titleAr: 'تقسيم إيفا',
     bodyEn:
       'One-click CSV downloads for all active program lines — warehouse (EVA) vs external (Not EVA). Same formulary cut as Pharmacy.',
@@ -129,7 +129,7 @@ const STAFF_STEPS: Step[] = [
   },
   {
     n: 5,
-    id: 'staff-4',
+    id: 'staff-5',
     titleEn: 'Programs',
     titleAr: 'البرامج',
     bodyEn:
@@ -142,7 +142,7 @@ const STAFF_STEPS: Step[] = [
   },
   {
     n: 6,
-    id: 'staff-5',
+    id: 'staff-6',
     titleEn: 'Refills',
     titleAr: 'الصرف الشهري',
     bodyEn:
@@ -276,7 +276,7 @@ export default function GuidePage() {
             How to use Medical Aid
           </h1>
           <p className="text-slate-600" dir="rtl">
-            ثلاث خطوات للمستفيد · خمس خطوات للتشغيل
+            ثلاث خطوات للمستفيد · ست خطوات للتشغيل
           </p>
           <p className="text-sm text-slate-500 max-w-lg mx-auto">
             Submit → track status → open your profile for renewals and replies. Staff follow Queue →
