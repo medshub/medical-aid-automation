@@ -55,7 +55,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* 2027 renewal window */}
         <Link
           href="/me"
           className="aid-rise block rounded-2xl border-2 border-amber-300/90 bg-gradient-to-br from-amber-50 to-white px-4 py-4 shadow-sm hover:border-amber-400 transition active:scale-[0.99]"
@@ -159,8 +158,14 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="aid-rise">
+          <div className="aid-rise flex flex-col gap-2">
             <GetAppButton variant="outline" />
+            <Link
+              href="/demo"
+              className="block rounded-2xl border border-violet-200/90 bg-violet-50/90 px-4 py-3 text-center text-sm font-semibold text-violet-900 hover:bg-violet-100 transition"
+            >
+              See the demo · شاهد العرض الحي →
+            </Link>
           </div>
         </section>
 
