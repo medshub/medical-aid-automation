@@ -264,19 +264,19 @@ export default async function StatusPage() {
               </li>
               <li>
                 <Link href="/eva-split" className="underline font-medium">
-                  3b EVA split
+                  4 EVA split
                 </Link>{' '}
                 — one-click CSV · warehouse vs external
               </li>
               <li>
                 <Link href="/programs" className="underline font-medium">
-                  4 Programs
+                  5 Programs
                 </Link>{' '}
                 — chronic enrollments
               </li>
               <li>
                 <Link href="/refills" className="underline font-medium">
-                  5 Refills
+                  6 Refills
                 </Link>{' '}
                 — monthly cycles · safety queue
               </li>
