@@ -12,6 +12,7 @@ const PUBLIC = [
   { href: '/request-status', label: 'My status', labelAr: 'حالة طلبي' },
   { href: '/me', label: 'My profile', labelAr: 'ملفي' },
   { href: '/guide', label: 'Help', labelAr: 'مساعدة' },
+  { href: '/demo', label: 'Demo', labelAr: 'عرض' },
 ];
 
 const OPS_PRIMARY = [
