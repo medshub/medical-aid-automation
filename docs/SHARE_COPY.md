@@ -1,12 +1,16 @@
 # Share & promote — ready-to-paste copy
 
-**Canonical links**
+**Canonical links (live today)**
 - Live: https://medical-aid-automation.vercel.app
-- Demo: https://medical-aid-automation.vercel.app/org/demo
-- Guide: https://medical-aid-automation.vercel.app/guide
+- **Walkthrough / demo:** https://medical-aid-automation.vercel.app/guide
 - Status: https://medical-aid-automation.vercel.app/status
+- Submit: https://medical-aid-automation.vercel.app/intake
+- Profile: https://medical-aid-automation.vercel.app/me
 - Org register: https://medical-aid-automation.vercel.app/org/register
 - GitHub: https://github.com/ArmaniousESP/medical-aid-automation
+
+After production redeploy (`docs/DEPLOY.md`), also use:  
+https://medical-aid-automation.vercel.app/org/demo
 
 ---
 
@@ -17,20 +21,20 @@ Medical Aid is live — monthly chronic medicine support without paper forms.
 Submit: https://medical-aid-automation.vercel.app/intake  
 Track status: https://medical-aid-automation.vercel.app/request-status  
 Profile / 2027 renew: https://medical-aid-automation.vercel.app/me  
-Demo: https://medical-aid-automation.vercel.app/org/demo
+How it works: https://medical-aid-automation.vercel.app/guide
 
 **AR**  
 منصة دعم العلاج الشهري جاهزة — بدون استمارات ورقية.  
 تقديم: https://medical-aid-automation.vercel.app/intake  
 حالة الطلب: https://medical-aid-automation.vercel.app/request-status  
 ملفي / تجديد 2027: https://medical-aid-automation.vercel.app/me  
-عرض: https://medical-aid-automation.vercel.app/org/demo
+الدليل: https://medical-aid-automation.vercel.app/guide
 
 ---
 
 ## Email (stakeholders)
 
-**Subject:** Medical Aid platform is live — demo in 5 minutes  
+**Subject:** Medical Aid platform is live — guide in 5 minutes  
 
 Hi,  
 
@@ -40,8 +44,8 @@ We’ve moved monthly chronic medicine support off Google Forms into a dedicated
 - Ops: Queue → Claims → Pharmacy → EVA → Programs → Refills  
 - Multi-org ready: other employers can register  
 
-Try the public demo: https://medical-aid-automation.vercel.app/org/demo  
-Full guide: https://medical-aid-automation.vercel.app/guide  
+Walkthrough: https://medical-aid-automation.vercel.app/guide  
+System status: https://medical-aid-automation.vercel.app/status  
 
 Happy to walk through on a call.
 
@@ -53,7 +57,7 @@ We shipped **Medical Aid** — a production platform for monthly chronic medicin
 
 Privacy-first public intake, Egyptian drug catalog matching, formulary routing (EVA / not EVA), multi-organization isolation, and a clear six-step ops path.  
 
-Live demo: https://medical-aid-automation.vercel.app/org/demo  
+Guide: https://medical-aid-automation.vercel.app/guide  
 
 #Healthcare #Egypt #EmployeeBenefits #DigitalHealth
 
@@ -62,7 +66,7 @@ Live demo: https://medical-aid-automation.vercel.app/org/demo
 ## X / Twitter
 
 Medical Aid is live: monthly chronic meds support — submit, track, renew. No Google Form required.  
-Demo → https://medical-aid-automation.vercel.app/org/demo
+Guide → https://medical-aid-automation.vercel.app/guide
 
 ---
 
