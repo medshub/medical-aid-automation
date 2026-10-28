@@ -9,6 +9,14 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      { source: '/queue', destination: '/intake-ops', permanent: false },
+      { source: '/submit', destination: '/intake', permanent: false },
+      { source: '/status-check', destination: '/request-status', permanent: false },
+      { source: '/profile', destination: '/me', permanent: false },
+    ];
+  },
 };
 
 module.exports = nextConfig;
