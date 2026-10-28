@@ -145,7 +145,7 @@ export default async function RefillsPage({
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-3 md:hidden">
           {rows.map((r) => (
             <Link key={r.id} href={`/refills/${r.id}`} className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur">
               <div className="flex justify-between gap-2">
@@ -172,6 +172,60 @@ export default async function RefillsPage({
             </Link>
           ))}
         </div>
+
+        {rows.length > 0 && (
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-white/80 bg-white/90 shadow-sm backdrop-blur">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50/80 text-xs text-slate-500">
+                <tr>
+                  <th className="p-3 font-semibold">Program</th>
+                  <th className="p-3 font-semibold">Patient</th>
+                  <th className="p-3 font-semibold">Period</th>
+                  <th className="p-3 font-semibold">Status</th>
+                  {whoOn && <th className="p-3 font-semibold">Risk</th>}
+                  <th className="p-3 font-semibold">Items</th>
+                  <th className="p-3 font-semibold">Est.</th>
+                  <th className="p-3 font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id} className="border-t hover:bg-slate-50/80">
+                    <td className="p-3 font-mono text-xs">{r.program_code}</td>
+                    <td className="p-3">
+                      <div className="font-medium">{r.patient_name}</div>
+                      <div className="text-xs text-slate-500">{r.employee_name} · {r.external_employee_id}</div>
+                    </td>
+                    <td className="p-3">{r.period}</td>
+                    <td className="p-3">
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusStyle(String(r.status))`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    {whoOn && (
+                      <td className="p-3">
+                        {(r as { latest_risk?: string | null }).latest_risk ? (
+                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${riskStyle((r as { latest_risk?: string | null }).latest_risk)}`}>
+                            {(r as { latest_risk?: string | null }).latest_risk}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">—</span>
+                        )}
+                      </td>
+                    )}
+                    <td className="p-3">{r.item_count}</td>
+                    <td className="p-3">{r.estimated_total_egp ?? '—'}</td>
+                    <td className="p-3">
+                      <Link href={`/refills/${r.id}`} className="rounded-lg bg-violet-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-800">
+                        Open
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="aid-sticky-bar">
