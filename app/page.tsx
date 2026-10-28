@@ -161,7 +161,7 @@ export default function Home() {
           <div className="aid-rise flex flex-col gap-2">
             <GetAppButton variant="outline" />
             <Link
-              href="/demo"
+              href="/org/demo"
               className="block rounded-2xl border border-violet-200/90 bg-violet-50/90 px-4 py-3 text-center text-sm font-semibold text-violet-900 hover:bg-violet-100 transition"
             >
               See the demo · شاهد العرض الحي →
