@@ -147,7 +147,7 @@ export default function ClaimsPage() {
           <FlowSteps current={2} />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="aid-section-label">Step 2 of 5 · Claims</p>
+              <p className="aid-section-label">Step 2 of 6 · Claims</p>
               <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Claims</h1>
               <p className="text-sm text-slate-600" dir="rtl">
                 المطالبات · راجع المسودات ثم Submit
