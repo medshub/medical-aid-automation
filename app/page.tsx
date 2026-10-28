@@ -55,6 +55,25 @@ export default function Home() {
           ))}
         </div>
 
+        {/* 2027 renewal window */}
+        <Link
+          href="/me"
+          className="aid-rise block rounded-2xl border-2 border-amber-300/90 bg-gradient-to-br from-amber-50 to-white px-4 py-4 shadow-sm hover:border-amber-400 transition active:scale-[0.99]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-800">
+            2027 support · دعم 2027
+          </p>
+          <p className="text-sm font-semibold text-amber-950 mt-1">
+            Update your regimen before 10 Dec 2026
+          </p>
+          <p className="text-xs text-amber-900/90 mt-0.5" dir="rtl">
+            جدّد طلبك قبل 10 ديسمبر 2026 لاستمرار الدعم في 2027
+          </p>
+          <p className="text-xs font-medium text-amber-800 mt-2">
+            Open profile → Renew · افتح ملفي → تجديد →
+          </p>
+        </Link>
+
         <HomeContinuity />
 
         <section className="space-y-3" aria-label="For beneficiaries">
@@ -208,7 +227,7 @@ export default function Home() {
           </summary>
           <div className="border-t border-slate-100 px-4 pb-4 pt-3 space-y-2">
             <p className="text-xs text-slate-500 text-center">
-              Queue → Claims → Pharmacy → Programs → Refills
+              Queue → Claims → Pharmacy → EVA → Programs → Refills
             </p>
             <Suspense
               fallback={
