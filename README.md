@@ -1,38 +1,51 @@
 # Medical Aid Automation
 
-**طلب مساعدة علاج شهري** — platform-native monthly treatment support
+**طلب مساعدة علاج شهري** — platform-native monthly chronic medicine support
 
 System of record: **Neon** (not Google Sheets).  
 Stack: **Next.js 14** · **Vercel** · **Neon PostgreSQL** · **GitHub**
 
-Live: [medical-aid-automation.vercel.app](https://medical-aid-automation.vercel.app)  
-Guide: [/guide](https://medical-aid-automation.vercel.app/guide)
+| | |
+|--|--|
+| **Live** | https://medical-aid-automation.vercel.app |
+| **Demo** | https://medical-aid-automation.vercel.app/demo |
+| **Guide** | https://medical-aid-automation.vercel.app/guide |
+| **Status** | https://medical-aid-automation.vercel.app/status |
+
+Share copy (WhatsApp, email, LinkedIn, X): [`docs/SHARE_COPY.md`](docs/SHARE_COPY.md)  
+Live walkthrough script: [`docs/DEMO.md`](docs/DEMO.md)
 
 ---
 
-## Primary cycle (use this)
+## Primary cycle
+
+### Beneficiaries (public)
 
 ```
-/intake          → beneficiary submits
-/intake-ops     → ops reviews + Process platform intake
-                   (match · enroll · claim draft)
-/claims         → review / submit amounts
-/programs       → chronic programs
-/pharmacy       → pick list · dispense
+/intake            → submit request (estimate · draft · Request ID)
+/request-status   → track · share · privacy mask
+/me               → profile · 2027 renew (before 10 Dec 2026)
+```
+
+### Staff (unlock on Home)
+
+```
+1 /intake-ops   Queue     → process · match · enroll · claim drafts
+2 /claims       Claims    → review · submit
+3 /pharmacy     Pharmacy  → period CSV · batch
+4 /eva-split    EVA       → warehouse vs external cut
+5 /programs     Programs  → chronic enrollments
+6 /refills      Refills   → monthly cycles · safety
 ```
 
 | UI | Purpose |
 |----|--------|
-| `/guide` | Step-by-step how to use |
-| `/intake` | Submit request (no Google Form) |
-| `/intake-ops` | Queue + process |
-| `/claims` | Claim drafts |
-| `/programs` | Active chronic programs |
-| `/pharmacy` | EVA / NOT EVA pick list |
-| `/status` | Readiness (Neon) |
-| `/` | Dashboard + process buttons |
+| `/demo` | Public showcase (5 min) |
+| `/guide` | Full bilingual how-to |
+| `/status` | Health & ops checklist |
+| `/org/register` | Other employers join |
 
-**Legacy:** Google Form → sheet → `/api/process` still works if `GOOGLE_*` is set; not required.
+**Legacy:** Google Form → sheet → `/api/process` if `GOOGLE_*` is set; not required.
 
 ---
 
@@ -42,26 +55,21 @@ Guide: [/guide](https://medical-aid-automation.vercel.app/guide)
 |----------|----------|--------|
 | `DATABASE_URL` | **Yes** | Neon **pooler** connection |
 | `PROCESS_SECRET` | Recommended | Unlock ops APIs |
-| `AUTO_ENROLL_INTAKE` | Optional | Default **on**; set `false` to disable |
-| `AUTO_CLAIM_ON_ENROLL` | Optional | Default **on**; set `false` to disable |
+| `AUTO_ENROLL_INTAKE` | Optional | Default **on** |
+| `AUTO_CLAIM_ON_ENROLL` | Optional | Default **on** |
 | `CLAIMS_WEBHOOK_URL` | Optional | External TPA push |
 | `GOOGLE_*` + `GOOGLE_SHEET_ID` | Optional | Legacy sheet path only |
-| `MSH_API_BASE` / `MSH_API_KEY` | Optional | Medicine Support Hub catalog |
+| `NEON_AUTH_*` + `OPS_ALLOWED_EMAILS` | Optional | Google staff sign-in |
+| WhatsApp / DHIS2 vars | Optional | Outreach & HMIS |
 
 ---
 
 ## Key APIs
 
 ```bash
-# Platform intake process (match + enroll + claim)
-curl -X POST "$APP/api/process-intake" -H "Content-Type: application/json" \
-  -H "x-process-secret: $SECRET" -d '{"dryRun":false}'
-
-# Health
 curl "$APP/api/health"
 
-# Legacy sheet process
-curl -X POST "$APP/api/process" -H "Content-Type: application/json" \
+curl -X POST "$APP/api/process-intake" -H "Content-Type: application/json" \
   -H "x-process-secret: $SECRET" -d '{"dryRun":false}'
 ```
 
@@ -69,10 +77,10 @@ curl -X POST "$APP/api/process" -H "Content-Type: application/json" \
 
 ## Docs
 
-- `docs/PLATFORM_COMPLETE.md` — fulfillment checklist  
-- `docs/platform-intake-msh.md` — intake + MSH  
-- `docs/claims.md` — claims API  
-- `docs/schema/001_chronic_core.sql` — Neon schema  
+- `docs/PRODUCTION_READINESS.md` — production checklist  
+- `docs/DEMO.md` · `docs/SHARE_COPY.md` — demo & promotion  
+- `docs/NEON_AUTH.md` · `docs/STAGING.md`  
+- `docs/schema/` — Neon schema  
 
 ---
 
@@ -84,4 +92,4 @@ cp .env.example .env.local   # DATABASE_URL minimum
 npm run dev
 ```
 
-Private – internal use.
+Private – internal / multi-org use.
