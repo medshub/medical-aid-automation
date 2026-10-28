@@ -2,7 +2,7 @@ name: Deploy Vercel
 
 # Production deploy on every push to main + manual run.
 # Requires GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
-# If secrets are missing, the job exits 0 with a notice (Git-linked Vercel still deploys).
+# See docs/DEPLOY.md
 
 on:
   push:
@@ -23,47 +23,41 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
-      - name: Check secrets
+      - name: Require CLI secrets
         id: check
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "### Deploy Action skipped (no CLI secrets)" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Deploy FAILED — missing secrets" >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "Add these **repository secrets** to force CLI deploys:" >> "$GITHUB_STEP_SUMMARY"
-            echo "- \`VERCEL_TOKEN\` from https://vercel.com/account/tokens" >> "$GITHUB_STEP_SUMMARY"
-            echo "- \`VERCEL_ORG_ID\` / \`VERCEL_PROJECT_ID\` from \`vercel link\` → .vercel/project.json" >> "$GITHUB_STEP_SUMMARY"
+            echo "Add repository secrets:" >> "$GITHUB_STEP_SUMMARY"
+            echo "- \`VERCEL_TOKEN\` — https://vercel.com/account/tokens" >> "$GITHUB_STEP_SUMMARY"
+            echo "- \`VERCEL_ORG_ID\` / \`VERCEL_PROJECT_ID\` — from \`vercel link\` → .vercel/project.json" >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "If the Vercel project is **linked to this GitHub repo**, a production deploy still starts from the Git push." >> "$GITHUB_STEP_SUMMARY"
-            echo "::notice::CLI deploy skipped — missing secrets. Rely on Vercel Git integration or add secrets."
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Or redeploy from the Vercel dashboard (Deployments → Redeploy from main)." >> "$GITHUB_STEP_SUMMARY"
+            echo "Docs: docs/DEPLOY.md" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Missing VERCEL_TOKEN / VERCEL_ORG_ID / VERCEL_PROJECT_ID — CLI deploy cannot run. Production may stay stale."
+            exit 1
           fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Checkout
-        if: steps.check.outputs.skip != 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node
-        if: steps.check.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Vercel CLI
-        if: steps.check.outputs.skip != 'true'
         run: npm install -g vercel@latest
 
       - name: Pull Vercel env (production)
-        if: steps.check.outputs.skip != 'true'
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build (production)
-        if: steps.check.outputs.skip != 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy prebuilt to production
-        if: steps.check.outputs.skip != 'true'
         id: deploy
         run: |
           set -e
@@ -71,18 +65,33 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed: $url"
 
-      - name: Health check
-        if: steps.check.outputs.skip != 'true'
+      - name: Health + freshness check
         run: |
-          set +e
+          set -e
           base="${{ secrets.VERCEL_APP_URL }}"
           if [ -z "$base" ]; then
             base="https://medical-aid-automation.vercel.app"
           fi
-          sleep 8
-          code=$(curl -sS -o /tmp/health.json -w "%{http_code}" "$base/api/health" || echo "000")
+          sleep 12
+          code=$(curl -sS -o /tmp/health.json -w "%{http_code}" "$base/api/health")
           echo "Health HTTP $code"
-          cat /tmp/health.json 2>/dev/null || true
+          cat /tmp/health.json
+          test "$code" = "200"
+          python3 -c "import json; d=json.load(open('/tmp/health.json')); assert d.get('ok') is True"
+
+          # Demo routes must be public after this deploy
+          for path in /org/demo /demo; do
+            c=$(curl -sS -o /dev/null -w "%{http_code}" -L --max-redirs 0 "$base$path" || true)
+            # allow 200 only (not 307/404)
+            c=$(curl -sS -o /dev/null -w "%{http_code}" "$base$path")
+            echo "$path -> $c"
+          done
+          demo=$(curl -sS -o /dev/null -w "%{http_code}" "$base/org/demo")
+          if [ "$demo" != "200" ]; then
+            echo "::warning::/org/demo returned $demo — edge cache may lag; check in 1–2 minutes"
+          fi
+
           echo "### Deploy" >> "$GITHUB_STEP_SUMMARY"
           echo "**URL:** ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "**Health:** $code · $base/api/health" >> "$GITHUB_STEP_SUMMARY"
+          echo "**/org/demo:** $demo" >> "$GITHUB_STEP_SUMMARY"
