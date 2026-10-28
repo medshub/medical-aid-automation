@@ -77,7 +77,7 @@ export default async function PharmacyPage({
           <FlowSteps current={3} />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="aid-section-label">Step 3 of 5 · Pharmacy</p>
+              <p className="aid-section-label">Step 3 of 6 · Pharmacy</p>
               <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
                 Pharmacy
               </h1>
@@ -92,8 +92,8 @@ export default async function PharmacyPage({
               >
                 ← Claims
               </Link>
-              <Link href="/programs" className="aid-cta-violet px-3 py-2 text-sm">
-                Next: Programs →
+              <Link href="/eva-split" className="aid-cta-violet px-3 py-2 text-sm">
+                Next: EVA split →
               </Link>
             </div>
           </div>
@@ -310,8 +310,8 @@ export default async function PharmacyPage({
           >
             ← Claims
           </Link>
-          <Link href="/programs" className="aid-cta-violet flex-1 py-3 text-center text-sm">
-            Programs →
+          <Link href="/eva-split" className="aid-cta-violet flex-1 py-3 text-center text-sm">
+            EVA split →
           </Link>
         </div>
       </div>
