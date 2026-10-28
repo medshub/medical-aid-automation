@@ -17,9 +17,10 @@ const PUBLIC = [
 const OPS_PRIMARY = [
   { href: '/intake-ops', label: '1 Queue', hint: 'New requests' },
   { href: '/claims', label: '2 Claims', hint: 'Review' },
-  { href: '/pharmacy', label: '3 Pharmacy', hint: 'EVA lists' },
-  { href: '/programs', label: '4 Programs', hint: 'Chronic' },
-  { href: '/refills', label: '5 Refills', hint: 'Monthly' },
+  { href: '/pharmacy', label: '3 Pharmacy', hint: 'Period lists' },
+  { href: '/eva-split', label: '4 EVA', hint: 'Warehouse cut' },
+  { href: '/programs', label: '5 Programs', hint: 'Chronic' },
+  { href: '/refills', label: '6 Refills', hint: 'Monthly' },
 ];
 
 const OPS_MORE = [
@@ -27,7 +28,6 @@ const OPS_MORE = [
   { href: '/admin/roles', label: 'Roles' },
   { href: '/notifications', label: 'WhatsApp' },
   { href: '/dry-run', label: 'Dry-run' },
-  { href: '/eva-split', label: 'EVA split' },
   { href: '/formulary', label: 'Formulary' },
   { href: '/reports', label: 'Reports' },
   { href: '/status', label: 'System status' },
