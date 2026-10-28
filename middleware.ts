@@ -12,6 +12,7 @@ const PUBLIC_EXACT = new Set([
   '/me',
   '/org/register',
   '/guide',
+  '/demo',
   '/status',
   '/admin',
   '/icon',
