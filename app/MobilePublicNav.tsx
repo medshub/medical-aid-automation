@@ -16,8 +16,9 @@ const STAFF_ITEMS = [
   { href: '/intake-ops', label: 'Queue', icon: '1' },
   { href: '/claims', label: 'Claims', icon: '2' },
   { href: '/pharmacy', label: 'Pharmacy', icon: '3' },
-  { href: '/programs', label: 'Programs', icon: '4' },
-  { href: '/refills', label: 'Refills', icon: '5' },
+  { href: '/eva-split', label: 'EVA', icon: '4' },
+  { href: '/programs', label: 'Programs', icon: '5' },
+  { href: '/refills', label: 'Refills', icon: '6' },
 ] as const;
 
 function isStaffPath(pathname: string) {
@@ -79,7 +80,7 @@ export function MobilePublicNav() {
                 >
                   {item.icon}
                 </span>
-                <span className="text-[10px] font-semibold leading-tight">
+                <span className="text-[9px] font-semibold leading-tight">
                   {item.label}
                 </span>
               </Link>
