@@ -156,6 +156,12 @@ const STAFF_STEPS: Step[] = [
 
 const MORE_TOOLS = [
   {
+    href: '/demo',
+    title: 'Live demo',
+    titleAr: 'عرض حي',
+    body: '5-minute public walkthrough for stakeholders.',
+  },
+  {
     href: '/admin/roles',
     title: 'Roles',
     titleAr: 'الأدوار',
@@ -280,7 +286,7 @@ export default function GuidePage() {
           </p>
           <p className="text-sm text-slate-500 max-w-lg mx-auto">
             Submit → track status → open your profile for renewals and replies. Staff follow Queue →
-            Claims → Pharmacy → EVA split → Programs → Refills.
+            Claims → Pharmacy → EVA → Programs → Refills. Public demo: /demo.
           </p>
         </header>
 
@@ -408,7 +414,7 @@ export default function GuidePage() {
         <section id="more-tools" className="space-y-4 scroll-mt-28">
           <h2 className="font-bold text-lg">More tools</h2>
           <p className="text-sm text-slate-600">
-            Under <strong>Staff tools → More</strong> — not part of the daily path.
+            Public demo plus tools under <strong>Staff tools → More</strong>.
           </p>
           <ul className="grid gap-3 sm:grid-cols-2">
             {MORE_TOOLS.map((t) => (
@@ -441,8 +447,8 @@ export default function GuidePage() {
           <h2 className="font-bold text-lg">Privacy</h2>
           <ul className="space-y-2 text-slate-600">
             <li>
-              Public: <strong>Submit</strong>, <strong>Status</strong>, and <strong>Profile</strong>{' '}
-              lookup only.
+              Public: <strong>Submit</strong>, <strong>Status</strong>, <strong>Profile</strong>, and{' '}
+              <strong>Demo</strong>.
             </li>
             <li>
               Ops need Google sign-in (allowlist / org membership) or PROCESS_SECRET unlock.
@@ -457,6 +463,12 @@ export default function GuidePage() {
             className="rounded-2xl border border-white/80 bg-white/90 px-5 py-3 text-sm font-semibold hover:bg-white backdrop-blur"
           >
             Home
+          </Link>
+          <Link
+            href="/demo"
+            className="rounded-2xl border border-violet-200 bg-violet-50 px-5 py-3 text-sm font-semibold text-violet-900"
+          >
+            Live demo
           </Link>
           <Link
             href="/me"
