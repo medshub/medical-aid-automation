@@ -45,6 +45,8 @@ function isPublicPath(pathname: string): boolean {
   if (PUBLIC_EXACT.has(pathname)) return true;
   if (pathname === '/sign-in' || pathname.startsWith('/sign-in/')) return true;
   if (pathname === '/org' || pathname.startsWith('/org/')) return true;
+  if (pathname === '/demo' || pathname.startsWith('/demo/')) return true;
+  if (pathname === '/guide' || pathname.startsWith('/guide/')) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (pathname === '/api/intake') return true;
   return false;
