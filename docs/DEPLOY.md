@@ -1,59 +1,83 @@
-# Deploy Medical Aid to production
+# Deploy Medical Aid to production (go-live)
 
-Live site: https://medical-aid-automation.vercel.app
+**Live:** https://medical-aid-automation.vercel.app  
+**Repo `main` is complete.** If the live site is behind, this doc is the only remaining work.
 
-## Symptom of a stale production build
+## How to tell production is stale
 
-- `/demo` redirects to `/?next=/demo`
-- `/org/demo` returns **404** even though the route exists on `main`
-- Home is missing the **2027 renewal banner** and **See the demo** button
+| Check | Stale (bad) | Fresh (good) |
+|-------|-------------|--------------|
+| Home | No **2027** banner | Banner: renew before **10 Dec 2026** |
+| `/org/demo` | **404** | **200** |
+| `/demo` | **307** → `/?next=/demo` | **200** |
 
-GitHub `main` can be ahead while Vercel still serves an older deployment.
+As of the last platform check: production was **stale** while GitHub `main` already had demo + 2027 + 6-step ops.
 
-## Preferred: Vercel ↔ GitHub integration
+## Fix in 5 minutes (Vercel Dashboard) — recommended
 
-1. Open [Vercel Dashboard](https://vercel.com/dashboard) → project **medical-aid-automation**.
-2. **Settings → Git** — repository must be `ArmaniousESP/medical-aid-automation` (or `medshub/medical-aid-automation` if that is the linked remote), branch **main**.
-3. **Deployments** → confirm the latest commit SHA matches GitHub `main`.
-4. If the latest commit is missing: **Deployments → Redeploy** the newest production deployment, or **Create Deployment** from `main`.
+1. Open [vercel.com/dashboard](https://vercel.com/dashboard) → project **medical-aid-automation**.
+2. **Settings → Git**
+   - Connected repo: `ArmaniousESP/medical-aid-automation` **or** `medshub/medical-aid-automation`
+   - Production branch: **`main`**
+   - If disconnected: **Connect Git Repository** and select the correct repo.
+3. **Deployments** tab → **Create Deployment** (or **Redeploy**)
+   - Branch / commit: **`main`** (latest)
+   - Environment: **Production**
+4. Wait until status is **Ready**.
+5. Hard-refresh the site (or open an incognito window) and run the smoke table above.
 
-## Force CLI deploy (GitHub Actions)
+## Fix via GitHub Actions (CLI deploy)
 
-Repo workflow: `.github/workflows/deploy-vercel.yml`
+Workflow: `.github/workflows/deploy-vercel.yml`  
+**It now fails** if secrets are missing (no silent skip).
 
-Add **repository secrets**:
+### 1. Create a Vercel token
+https://vercel.com/account/tokens → create → copy token.
 
-| Secret | Where to get it |
-|--------|------------------|
-| `VERCEL_TOKEN` | https://vercel.com/account/tokens |
-| `VERCEL_ORG_ID` | `.vercel/project.json` after `vercel link` |
-| `VERCEL_PROJECT_ID` | same file |
-| `VERCEL_APP_URL` | optional, default `https://medical-aid-automation.vercel.app` |
-
-Then:
+### 2. Get org + project IDs
+On a machine with Node:
 
 ```bash
-# empty commit to trigger, or
-gh workflow run "Deploy Vercel"
+npm i -g vercel
+vercel login
+cd /path/to/medical-aid-automation
+vercel link   # select the production project
+cat .vercel/project.json
+# → orgId, projectId
 ```
 
-Without these secrets the Action reports **success** but **skips** the CLI deploy (it only prints a notice). Rely on Git integration or add the secrets.
+### 3. GitHub → repo → Settings → Secrets and variables → Actions
 
-## After a good deploy — smoke checklist
+| Secret | Value |
+|--------|--------|
+| `VERCEL_TOKEN` | token from step 1 |
+| `VERCEL_ORG_ID` | `orgId` from project.json |
+| `VERCEL_PROJECT_ID` | `projectId` from project.json |
+| `VERCEL_APP_URL` | optional: `https://medical-aid-automation.vercel.app` |
+
+### 4. Run the workflow
+**Actions → Deploy Vercel → Run workflow** (branch `main`).
+
+Expect: Checkout → Build → Deploy → Health **not** skipped.
+
+## After deploy — confirm
 
 ```bash
 curl -sS -o /dev/null -w "%{http_code}\n" https://medical-aid-automation.vercel.app/
 curl -sS -o /dev/null -w "%{http_code}\n" https://medical-aid-automation.vercel.app/org/demo
 curl -sS -o /dev/null -w "%{http_code}\n" https://medical-aid-automation.vercel.app/demo
-curl -sS https://medical-aid-automation.vercel.app/api/health | head -c 200
+curl -sS https://medical-aid-automation.vercel.app/api/health
 ```
 
-Expect: `/` **200**, `/org/demo` **200**, `/demo` **200** (or 307→`/org/demo` if you add a redirect), health `"ok":true`.
+Home HTML should contain `2027`. Health should have `"ok":true`.
 
-## Share while waiting
+## Share while production catches up
 
-Until production catches up, use pages that already work on the live host:
+These routes already respond **200** on the current host (older UI is fine for a walkthrough):
 
-- Guide: https://medical-aid-automation.vercel.app/guide
-- Status: https://medical-aid-automation.vercel.app/status
-- Intake: https://medical-aid-automation.vercel.app/intake
+- https://medical-aid-automation.vercel.app/guide
+- https://medical-aid-automation.vercel.app/status
+- https://medical-aid-automation.vercel.app/intake
+- https://medical-aid-automation.vercel.app/me
+
+Paste-ready text: `docs/SHARE_COPY.md`
