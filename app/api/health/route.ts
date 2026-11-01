@@ -9,10 +9,32 @@ import { staffAccessStatus } from '@/lib/staffAccess';
 
 export const dynamic = 'force-dynamic';
 
+function deployFingerprint() {
+  const sha =
+    process.env.VERCEL_GIT_COMMIT_SHA ||
+    process.env.GIT_COMMIT_SHA ||
+    process.env.COMMIT_SHA ||
+    '';
+  const deployment =
+    process.env.VERCEL_DEPLOYMENT_ID ||
+    process.env.VERCEL_URL ||
+    '';
+  const env = process.env.VERCEL_ENV || process.env.NODE_ENV || 'unknown';
+  return {
+    git_sha: sha ? sha.slice(0, 12) : null,
+    git_sha_full: sha || null,
+    deployment_id: deployment || null,
+    vercel_env: env,
+    /** Bump when shipping user-visible production gates (banner, /org/demo). */
+    release_marker: '2027-banner+org-demo',
+  };
+}
+
 /**
  * GET /api/health
  * Platform readiness: Neon required; Google sheets optional (legacy).
  * Staff: PROCESS_SECRET and/or Neon Auth Google + OPS_ALLOWED_EMAILS.
+ * Includes deploy fingerprint (Vercel git SHA) to detect stale production.
  */
 export async function GET() {
   const checks: Record<string, { ok: boolean; detail?: string }> = {};
@@ -20,6 +42,14 @@ export async function GET() {
   const wa = whatsappConfigStatus();
   const flags = featureFlagsStatus();
   const staff = staffAccessStatus();
+  const deploy = deployFingerprint();
+
+  checks.deploy = {
+    ok: true,
+    detail: deploy.git_sha
+      ? `sha=${deploy.git_sha} · env=${deploy.vercel_env} · marker=${deploy.release_marker}`
+      : `no git sha in env · marker=${deploy.release_marker} · local/old build?`,
+  };
 
   checks.env_database = {
     ok: !!process.env.DATABASE_URL,
@@ -213,6 +243,7 @@ export async function GET() {
       path: 'platform-first (sheet optional)',
       medicine_catalog:
         'Neon egyptian_drugs (if synced) → CSV cache → MSH fallback',
+      deploy,
       feature_flags: flags,
       guide: '/guide',
       staff_sign_in: '/sign-in',
