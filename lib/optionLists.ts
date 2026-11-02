@@ -74,3 +74,9 @@ export const INVENTORY_MODE_OPTIONS: PickerOption[] = labels([
   ['adjust', 'Adjust · تسوية'],
   ['dispense', 'Dispense · صرف'],
 ]);
+
+export const EVA_BUCKET_OPTIONS: PickerOption[] = labels([
+  ['all', 'All routes · الكل'],
+  ['EVA', 'Available at EVA · إيفا'],
+  ['NOT_EVA', 'Not at EVA · غير إيفا'],
+]);
