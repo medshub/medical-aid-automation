@@ -10,7 +10,9 @@ export const dynamic = 'force-dynamic';
 
 function statusStyle(s: string) {
   if (s === 'in_review') return 'bg-amber-100 text-amber-900 ring-1 ring-amber-200';
-  if (s === 'approved' || s === 'partially_approved') return 'bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200';
+  if (s === 'approved' || s === 'partially_approved') {
+    return 'bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200';
+  }
   if (s === 'dispensed') return 'bg-teal-100 text-teal-900 ring-1 ring-teal-200';
   if (s === 'rejected') return 'bg-red-100 text-red-800 ring-1 ring-red-200';
   return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
@@ -38,23 +40,27 @@ function defaultPeriod() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+type RefillRow = Awaited<ReturnType<typeof listRefills>>[number] & {
+  latest_risk?: string | null;
+};
+
 export default async function RefillsPage({
   searchParams,
 }: {
   searchParams: { status?: string; period?: string };
 }) {
-  let rows: Awaited<ReturnType<typeof listRefills>> = [];
+  let rows: RefillRow[] = [];
   let error: string | null = null;
   const status = searchParams.status || '';
   const period = searchParams.period || '';
   const whoOn = isWhoAssessmentEnabled();
 
   try {
-    rows = await listRefills({
+    rows = (await listRefills({
       status: status || undefined,
       period: period || undefined,
       limit: 100,
-    });
+    })) as RefillRow[];
   } catch (e: unknown) {
     error = e instanceof Error ? e.message : 'Failed to load refills';
   }
@@ -73,107 +79,186 @@ export default async function RefillsPage({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="aid-section-label">Step 6 of 6 · Refills</p>
-              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Refills</h1>
-              <p className="text-sm text-slate-600" dir="rtl">الدورات الشهرية · توليد ومراجعة</p>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+                Refills
+              </h1>
+              <p className="text-sm text-slate-600" dir="rtl">
+                الدورات الشهرية · توليد ومراجعة
+              </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
-              <Link href="/programs" className="rounded-xl border border-white/80 bg-white/90 px-3 py-2 font-medium hover:bg-white backdrop-blur">
+              <Link
+                href="/programs"
+                className="rounded-xl border border-white/80 bg-white/90 px-3 py-2 font-medium hover:bg-white backdrop-blur"
+              >
                 ← Programs
               </Link>
-              <Link href="/pharmacy" className="aid-cta-teal px-3 py-2 text-sm">Pharmacy CSV</Link>
+              <Link href="/pharmacy" className="aid-cta-teal px-3 py-2 text-sm">
+                Pharmacy CSV
+              </Link>
             </div>
           </div>
         </header>
 
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="aid-kpi"><p className="text-xl font-bold text-amber-800">{inReview}</p><p className="text-[11px] text-slate-500">in review</p></div>
-          <div className="aid-kpi"><p className="text-xl font-bold text-emerald-800">{approved}</p><p className="text-[11px] text-slate-500">approved</p></div>
-          <div className="aid-kpi"><p className="text-xl font-bold text-teal-800">{dispensed}</p><p className="text-[11px] text-slate-500">dispensed</p></div>
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-amber-800">{inReview}</p>
+            <p className="text-[11px] text-slate-500">in review</p>
+          </div>
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-emerald-800">{approved}</p>
+            <p className="text-[11px] text-slate-500">approved</p>
+          </div>
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-teal-800">{dispensed}</p>
+            <p className="text-[11px] text-slate-500">dispensed</p>
+          </div>
         </div>
 
         <div className="rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-white/90 p-5 shadow-sm space-y-4 backdrop-blur">
           <div>
-            <p className="text-sm font-semibold text-violet-950">Generate this month’s cycles</p>
-            <p className="text-xs text-violet-800 mt-0.5">Active programs → refill cycles → review → Pharmacy</p>
+            <p className="text-sm font-semibold text-violet-950">
+              Generate this month’s cycles
+            </p>
+            <p className="text-xs text-violet-800 mt-0.5">
+              Active programs → refill cycles → review → Pharmacy
+            </p>
           </div>
           <GenerateMonthButton />
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link href="/refills/safety" className="font-medium text-red-700 hover:underline">Safety view</Link>
-            <Link href="/pharmacy" className="font-medium text-teal-800 hover:underline">Export pharmacy lists</Link>
+            <Link
+              href="/refills/safety"
+              className="font-medium text-red-700 hover:underline"
+            >
+              Safety view
+            </Link>
+            <Link
+              href="/pharmacy"
+              className="font-medium text-teal-800 hover:underline"
+            >
+              Export pharmacy lists
+            </Link>
           </div>
         </div>
 
-        <form method="get" className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm flex flex-wrap gap-2 items-center backdrop-blur">
+        <form
+          method="get"
+          className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm flex flex-wrap gap-2 items-center backdrop-blur"
+        >
           <label className="text-sm font-medium text-slate-700">Period</label>
-          <input type="month" name="period" defaultValue={period || defaultPeriod()} className="rounded-xl border border-slate-200 px-3 py-2.5 text-base" />
-          <FormSelectPicker name="status" defaultValue={status} options={REFILL_STATUS_OPTIONS} allowCreate={false} placeholder="Status…" className="min-w-[180px]" />
-          <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white">Filter</button>
+          <input
+            type="month"
+            name="period"
+            defaultValue={period || defaultPeriod()}
+            className="rounded-xl border border-slate-200 px-3 py-2.5 text-base"
+          />
+          <FormSelectPicker
+            name="status"
+            defaultValue={status}
+            options={REFILL_STATUS_OPTIONS}
+            allowCreate={false}
+            placeholder="Status…"
+            className="min-w-[180px]"
+          />
+          <button
+            type="submit"
+            className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            Filter
+          </button>
         </form>
 
         <div className="flex flex-wrap gap-2">
-          {FILTERS.map((s) => (
-            <Link
-              key={s.id || 'all'}
-              href={
-                s.id
-                  ? `/refills?status=${s.id}${period ? `&period=${encodeURIComponent(period)}` : ''}`
-                  : period
-                    ? `/refills?period=${encodeURIComponent(period)}`
-                    : '/refills'
-              }
-              className={`min-h-[2.5rem] rounded-full px-3.5 py-1.5 text-xs font-semibold border ${
-                status === s.id
-                  ? 'bg-slate-900 text-white border-slate-900'
-                  : 'bg-white/90 border-slate-200 text-slate-600'
-              }`}
-            >
-              {s.label}
-            </Link>
-          ))}
+          {FILTERS.map((s) => {
+            const href = s.id
+              ? `/refills?status=${s.id}${period ? `&period=${encodeURIComponent(period)}` : ''}`
+              : period
+                ? `/refills?period=${encodeURIComponent(period)}`
+                : '/refills';
+            const active = status === s.id;
+            return (
+              <Link
+                key={s.id || 'all'}
+                href={href}
+                className={
+                  active
+                    ? 'min-h-[2.5rem] rounded-full px-3.5 py-1.5 text-xs font-semibold border bg-slate-900 text-white border-slate-900'
+                    : 'min-h-[2.5rem] rounded-full px-3.5 py-1.5 text-xs font-semibold border bg-white/90 border-slate-200 text-slate-600'
+                }
+              >
+                {s.label}
+              </Link>
+            );
+          })}
         </div>
 
-        {error && (
+        {error ? (
           <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm">
             <strong>Load failed:</strong> {error}
           </div>
-        )}
+        ) : null}
 
-        {!error && rows.length === 0 && (
+        {!error && rows.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white/80 p-8 text-center text-sm text-slate-500">
             <p className="font-medium text-slate-700">No cycles for this filter</p>
-            <p className="text-xs mt-1">Use Generate above, or enroll from the <Link href="/intake-ops" className="text-violet-700 underline">queue</Link>.</p>
+            <p className="text-xs mt-1">
+              Use Generate above, or enroll from the{' '}
+              <Link href="/intake-ops" className="text-violet-700 underline">
+                queue
+              </Link>
+              .
+            </p>
           </div>
-        )}
+        ) : null}
 
         <div className="space-y-3 md:hidden">
           {rows.map((r) => (
-            <Link key={r.id} href={`/refills/${r.id}`} className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur">
+            <Link
+              key={r.id}
+              href={`/refills/${r.id}`}
+              className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur"
+            >
               <div className="flex justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-semibold truncate">{r.patient_name || '—'}</p>
-                  <p className="text-xs text-slate-500">{r.employee_name}{r.external_employee_id ? ` · ${r.external_employee_id}` : ''}</p>
+                  <p className="text-xs text-slate-500">
+                    {r.employee_name}
+                    {r.external_employee_id ? ` · ${r.external_employee_id}` : ''}
+                  </p>
                 </div>
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full h-fit shrink-0 ${statusStyle(String(r.status))}`}>{r.status}</span>
+                <span
+                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full h-fit shrink-0 ${statusStyle(
+                    String(r.status)
+                  )}`}
+                >
+                  {r.status}
+                </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-mono text-slate-500">{r.program_code}</p>
-                {whoOn && (r as { latest_risk?: string | null }).latest_risk ? (
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${riskStyle((r as { latest_risk?: string | null }).latest_risk)}`}>
-                    {(r as { latest_risk?: string | null }).latest_risk}
+                {whoOn && r.latest_risk ? (
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(
+                      r.latest_risk
+                    )}`}
+                  >
+                    {r.latest_risk}
                   </span>
                 ) : null}
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600">{r.period}</span>
                 <span className="font-medium">
-                  {r.estimated_total_egp != null ? `~${r.estimated_total_egp} EGP` : `${r.item_count ?? 0} items`}
+                  {r.estimated_total_egp != null
+                    ? `~${r.estimated_total_egp} EGP`
+                    : `${r.item_count ?? 0} items`}
                 </span>
               </div>
             </Link>
           ))}
         </div>
 
-        {rows.length > 0 && (
+        {rows.length > 0 ? (
           <div className="hidden md:block overflow-x-auto rounded-2xl border border-white/80 bg-white/90 shadow-sm backdrop-blur">
             <table className="w-full text-sm text-left">
               <thead className="bg-slate-50/80 text-xs text-slate-500">
@@ -182,10 +267,10 @@ export default async function RefillsPage({
                   <th className="p-3 font-semibold">Patient</th>
                   <th className="p-3 font-semibold">Period</th>
                   <th className="p-3 font-semibold">Status</th>
-                  {whoOn && <th className="p-3 font-semibold">Risk</th>}
+                  {whoOn ? <th className="p-3 font-semibold">Risk</th> : null}
                   <th className="p-3 font-semibold">Items</th>
                   <th className="p-3 font-semibold">Est.</th>
-                  <th className="p-3 font-semibold"></th>
+                  <th className="p-3 font-semibold" />
                 </tr>
               </thead>
               <tbody>
@@ -194,29 +279,42 @@ export default async function RefillsPage({
                     <td className="p-3 font-mono text-xs">{r.program_code}</td>
                     <td className="p-3">
                       <div className="font-medium">{r.patient_name}</div>
-                      <div className="text-xs text-slate-500">{r.employee_name} · {r.external_employee_id}</div>
+                      <div className="text-xs text-slate-500">
+                        {r.employee_name} · {r.external_employee_id}
+                      </div>
                     </td>
                     <td className="p-3">{r.period}</td>
                     <td className="p-3">
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusStyle(String(r.status))`}>
+                      <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusStyle(
+                          String(r.status)
+                        )}`}
+                      >
                         {r.status}
                       </span>
                     </td>
-                    {whoOn && (
+                    {whoOn ? (
                       <td className="p-3">
-                        {(r as { latest_risk?: string | null }).latest_risk ? (
-                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${riskStyle((r as { latest_risk?: string | null }).latest_risk)}`}>
-                            {(r as { latest_risk?: string | null }).latest_risk}
+                        {r.latest_risk ? (
+                          <span
+                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(
+                              r.latest_risk
+                            )}`}
+                          >
+                            {r.latest_risk}
                           </span>
                         ) : (
                           <span className="text-slate-400 text-xs">—</span>
                         )}
                       </td>
-                    )}
+                    ) : null}
                     <td className="p-3">{r.item_count}</td>
                     <td className="p-3">{r.estimated_total_egp ?? '—'}</td>
                     <td className="p-3">
-                      <Link href={`/refills/${r.id}`} className="rounded-lg bg-violet-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-800">
+                      <Link
+                        href={`/refills/${r.id}`}
+                        className="rounded-lg bg-violet-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-800"
+                      >
                         Open
                       </Link>
                     </td>
@@ -225,13 +323,20 @@ export default async function RefillsPage({
               </tbody>
             </table>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="aid-sticky-bar">
         <div className="mx-auto max-w-5xl flex gap-2">
-          <Link href="/programs" className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">← Programs</Link>
-          <Link href="/pharmacy" className="aid-cta-teal flex-1 py-3 text-center text-sm">Pharmacy →</Link>
+          <Link
+            href="/programs"
+            className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
+          >
+            ← Programs
+          </Link>
+          <Link href="/pharmacy" className="aid-cta-teal flex-1 py-3 text-center text-sm">
+            Pharmacy →
+          </Link>
         </div>
       </div>
     </main>
