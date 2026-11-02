@@ -37,6 +37,8 @@ export default async function EvaSplitPage({
     ...(showNot ? not_eva.map((r) => ({ ...r, _b: 'NOT_EVA' as const })) : []),
   ];
 
+  const qParam = q ? `&q=${encodeURIComponent(q)}` : '';
+
   return (
     <main className="min-h-screen bg-slate-50 p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -51,7 +53,7 @@ export default async function EvaSplitPage({
                 EVA split · تقسيم الاعتماد
               </h1>
               <p className="text-sm text-slate-600">
-                Available in EVA · NOT IN EVA (same cut as pharmacy CSV)
+                Available in EVA · NOT IN EVA (CSV + PDF)
               </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
@@ -75,57 +77,80 @@ export default async function EvaSplitPage({
           <div>
             <p className="font-medium">Monthly pharmacy routing</p>
             <p className="text-xs sm:text-sm mt-1">
-              Active program lines split by formulary. Download CSV for the
-              warehouse (EVA) vs external (NOT EVA), or open{' '}
+              Active program lines split by formulary. Download CSV or PDF for EVA vs
+              external routes, or open{' '}
               <Link href="/pharmacy" className="font-semibold underline">
                 Pharmacy
               </Link>{' '}
               for period pick-lists and batch release.
             </p>
             <p className="text-xs text-teal-800 mt-1" dir="rtl">
-              تصدير CSV لإيفا / خارج إيفا · أو شاشة الصيدلية لقوائم الشهر
+              تصدير CSV أو PDF لإيفا / خارج إيفا · أو شاشة الصيدلية
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <a
-              href={`/api/eva-split?source=db&format=csv&bucket=EVA${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              href={`/api/eva-split?source=db&format=csv&bucket=EVA${qParam}`}
               className="rounded-xl bg-emerald-700 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-800"
             >
               Download CSV · EVA ({eva.length})
             </a>
             <a
-              href={`/api/eva-split?source=db&format=csv&bucket=NOT_EVA${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              href={`/api/eva-split?source=db&format=csv&bucket=NOT_EVA${qParam}`}
               className="rounded-xl bg-slate-800 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-slate-900"
             >
               Download CSV · NOT EVA ({not_eva.length})
             </a>
             <a
-              href={`/api/eva-split?source=db&format=csv&bucket=all${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              href={`/api/eva-split?source=db&format=csv&bucket=all${qParam}`}
               className="rounded-xl border border-teal-600 bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-teal-900 hover:bg-teal-50"
             >
               Download CSV · all ({eva.length + not_eva.length})
             </a>
           </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`/api/eva-split?source=db&format=pdf&bucket=EVA${qParam}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 text-xs sm:text-sm font-semibold text-rose-950 hover:bg-rose-100"
+            >
+              PDF · EVA ({eva.length})
+            </a>
+            <a
+              href={`/api/eva-split?source=db&format=pdf&bucket=NOT_EVA${qParam}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border-2 border-slate-400 bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-slate-900 hover:bg-slate-50"
+            >
+              PDF · NOT EVA ({not_eva.length})
+            </a>
+            <a
+              href={`/api/eva-split?source=db&format=pdf&bucket=all${qParam}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl bg-rose-700 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-rose-800"
+            >
+              PDF · all ({eva.length + not_eva.length})
+            </a>
+          </div>
+          <p className="text-[11px] text-teal-900/80">
+            PDF opens a print view · choose <strong>Save as PDF</strong> · اختر حفظ كـ PDF
+          </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div className="rounded-2xl border bg-white p-4 shadow-sm">
             <div className="text-xs text-slate-500">Available in EVA</div>
-            <div className="text-2xl font-semibold text-emerald-700">
-              {eva.length}
-            </div>
+            <div className="text-2xl font-semibold text-emerald-700">{eva.length}</div>
           </div>
           <div className="rounded-2xl border bg-white p-4 shadow-sm">
             <div className="text-xs text-slate-500">NOT IN EVA</div>
-            <div className="text-2xl font-semibold text-slate-700">
-              {not_eva.length}
-            </div>
+            <div className="text-2xl font-semibold text-slate-700">{not_eva.length}</div>
           </div>
           <div className="rounded-2xl border bg-white p-4 shadow-sm">
             <div className="text-xs text-slate-500">Total · الإجمالي</div>
-            <div className="text-2xl font-semibold">
-              {eva.length + not_eva.length}
-            </div>
+            <div className="text-2xl font-semibold">{eva.length + not_eva.length}</div>
           </div>
         </div>
 
@@ -200,9 +225,7 @@ export default async function EvaSplitPage({
               {rows.map((r, i) => (
                 <tr
                   key={`${r.program_code}-${r.line_code}-${i}`}
-                  className={`border-t ${
-                    r._b === 'EVA' ? 'bg-emerald-50/40' : ''
-                  }`}
+                  className={`border-t ${r._b === 'EVA' ? 'bg-emerald-50/40' : ''}`}
                 >
                   <td className="p-3">
                     <span
@@ -217,9 +240,7 @@ export default async function EvaSplitPage({
                   </td>
                   <td className="p-3">
                     <div className="font-medium">{r.employee_name}</div>
-                    <div className="text-xs font-mono text-slate-500">
-                      {r.employee_id}
-                    </div>
+                    <div className="text-xs font-mono text-slate-500">{r.employee_id}</div>
                   </td>
                   <td className="p-3">
                     <div>{r.patient_name}</div>
@@ -228,9 +249,7 @@ export default async function EvaSplitPage({
                   <td className="p-3">
                     <div className="font-medium">{r.matched_name}</div>
                     {r.requested_name !== r.matched_name && (
-                      <div className="text-xs text-slate-500">
-                        Requested: {r.requested_name}
-                      </div>
+                      <div className="text-xs text-slate-500">Requested: {r.requested_name}</div>
                     )}
                   </td>
                   <td className="p-3">{r.qty}</td>
@@ -252,7 +271,7 @@ export default async function EvaSplitPage({
         </div>
 
         <p className="text-xs text-slate-400">
-          Source: Neon. For pharmacy CSV use{' '}
+          Source: Neon. For pharmacy CSV/PDF use{' '}
           <Link href="/pharmacy" className="text-violet-700 underline">
             /pharmacy
           </Link>
