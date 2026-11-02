@@ -5,10 +5,11 @@ import {
 } from '@/lib/pharmacy';
 import { authorizeRequest, unauthorizedResponse } from '@/lib/auth';
 import { resolveOrgScope } from '@/lib/orgScope';
+import { buildPrintableHtml, pdfHtmlResponse } from '@/lib/exportPdf';
 
 export const dynamic = 'force-dynamic';
 
-/** GET /api/pharmacy/pick-list?period=&status=&formulary=EVA|NOT_EVA&format=csv */
+/** GET /api/pharmacy/pick-list?period=&status=&formulary=EVA|NOT_EVA&format=csv|pdf */
 export async function GET(req: NextRequest) {
   try {
     if (!authorizeRequest(req)) {
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
         ? (formularyRaw as 'EVA' | 'NOT_EVA')
         : 'all';
     const format = (searchParams.get('format') || 'json').toLowerCase();
+    const autoPrint = searchParams.get('autoprint') !== '0';
 
     const lines = await buildPharmacyPickList({
       period,
@@ -42,11 +44,12 @@ export async function GET(req: NextRequest) {
       org_ids: scope.all ? undefined : scope.org_ids,
     });
 
+    const label = [period || 'all', formulary !== 'all' ? formulary : '']
+      .filter(Boolean)
+      .join('-');
+
     if (format === 'csv') {
       const csv = pharmacyPickListCsv(lines);
-      const label = [period || 'all', formulary !== 'all' ? formulary : '']
-        .filter(Boolean)
-        .join('-');
       return new NextResponse(csv, {
         status: 200,
         headers: {
@@ -54,6 +57,43 @@ export async function GET(req: NextRequest) {
           'Content-Disposition': `attachment; filename="pharmacy-picklist-${label}.csv"`,
         },
       });
+    }
+
+    if (format === 'pdf' || format === 'print') {
+      const rows = lines.map((l) => ({
+        patient: l.patient_name || '',
+        employee: l.employee_name || '',
+        emp_id: l.external_employee_id || '',
+        med: l.matched_name || l.requested_name || '',
+        qty: l.qty ?? '',
+        status: l.status || '',
+        route: l.company_preferred ? 'EVA' : 'Not EVA',
+        program: l.program_code || '',
+      }));
+
+      const html = buildPrintableHtml({
+        title: `Pharmacy pick list · ${label}`,
+        subtitle: 'قائمة صرف الصيدلية · Export / Save as PDF from the print dialog',
+        meta: [
+          { label: 'Period', value: period || 'all' },
+          { label: 'Route', value: formulary },
+          { label: 'Lines', value: String(lines.length) },
+        ],
+        columns: [
+          { key: 'patient', label: 'Patient' },
+          { key: 'employee', label: 'Employee' },
+          { key: 'emp_id', label: 'Emp ID' },
+          { key: 'med', label: 'Medicine' },
+          { key: 'qty', label: 'Qty', align: 'right' },
+          { key: 'route', label: 'Route' },
+          { key: 'status', label: 'Status' },
+          { key: 'program', label: 'Program' },
+        ],
+        rows,
+        autoPrint,
+      });
+
+      return pdfHtmlResponse(html, `pharmacy-picklist-${label}.pdf.html`);
     }
 
     return NextResponse.json({
