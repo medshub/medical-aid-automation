@@ -45,3 +45,32 @@ export const RELATION_OPTIONS: PickerOption[] = labels([
   ['sibling', 'Sibling · أخ/أخت'],
   ['other', 'Other · أخرى'],
 ]);
+
+export const REFILL_STATUS_OPTIONS: PickerOption[] = labels([
+  ['', 'All statuses'],
+  ['in_review', 'In review'],
+  ['approved', 'Approved'],
+  ['partially_approved', 'Partially approved'],
+  ['dispensed', 'Dispensed'],
+  ['rejected', 'Rejected'],
+]);
+
+export const STAFF_ROLE_OPTIONS: PickerOption[] = labels([
+  ['admin', 'Admin'],
+  ['operator', 'Operator'],
+  ['viewer', 'Viewer'],
+]);
+
+export const DOC_TYPE_OPTIONS: PickerOption[] = labels([
+  ['roshetta', 'Roshetta · روشتة'],
+  ['invoice', 'Invoice · فاتورة'],
+  ['id', 'ID · هوية'],
+  ['lab', 'Lab · تحاليل'],
+  ['other', 'Other · أخرى'],
+]);
+
+export const INVENTORY_MODE_OPTIONS: PickerOption[] = labels([
+  ['receive', 'Receive · استلام'],
+  ['adjust', 'Adjust · تسوية'],
+  ['dispense', 'Dispense · صرف'],
+]);
