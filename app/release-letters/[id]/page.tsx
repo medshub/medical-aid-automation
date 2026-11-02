@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { query } from '@/lib/db';
 import { notFound } from 'next/navigation';
+import { PrintPdfButton } from '@/components/PrintPdfButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,13 +45,16 @@ export default async function ReleaseLetterPrintPage({
             >
               ← Program · البرنامج
             </Link>
-            <p className="text-xs text-slate-600">
-              Print with <kbd className="rounded border bg-slate-50 px-1.5 py-0.5 font-mono text-[11px]">Ctrl</kbd>
-              {' + '}
-              <kbd className="rounded border bg-slate-50 px-1.5 py-0.5 font-mono text-[11px]">P</kbd>
-              {' · '}
-              <span dir="rtl">اطبع من المتصفح</span>
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <PrintPdfButton />
+              <p className="text-xs text-slate-600">
+                Or <kbd className="rounded border bg-slate-50 px-1.5 py-0.5 font-mono text-[11px]">Ctrl</kbd>
+                {' + '}
+                <kbd className="rounded border bg-slate-50 px-1.5 py-0.5 font-mono text-[11px]">P</kbd>
+                {' · '}
+                <span dir="rtl">احفظ كـ PDF</span>
+              </p>
+            </div>
           </div>
 
           <article className="rounded-2xl border bg-white p-6 sm:p-8 shadow-sm print:shadow-none print:border-0 print:rounded-none">
