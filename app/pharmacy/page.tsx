@@ -68,7 +68,10 @@ export default async function PharmacyPage({
   const evaCount = lines.filter((l) => l.company_preferred).length;
   const notEvaCount = lines.length - evaCount;
 
-  const csvBase = `/api/pharmacy/pick-list?period=${encodeURIComponent(period)}&format=csv&includePending=true`;
+  const exportBase = `/api/pharmacy/pick-list?period=${encodeURIComponent(
+    period
+  )}&includePending=true`;
+  const currentFormulary = formulary === 'all' ? 'all' : formulary;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
@@ -82,7 +85,7 @@ export default async function PharmacyPage({
                 Pharmacy
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
-                الصيدلية · إيفا / غير إيفا · تصدير واستيراد CSV
+                الصيدلية · إيفا / غير إيفا · تصدير CSV و PDF
               </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
@@ -202,37 +205,78 @@ export default async function PharmacyPage({
           </Link>
         </div>
 
-        <div className="rounded-2xl border-2 border-teal-200 bg-teal-50/90 p-5 space-y-3 backdrop-blur">
+        <div className="rounded-2xl border-2 border-teal-200 bg-teal-50/90 p-5 space-y-4 backdrop-blur">
           <p className="text-sm font-semibold text-teal-950">
             Download for pharmacy · تحميل للصيدلية
           </p>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <a
-              href={`${csvBase}&formulary=EVA`}
-              className="aid-cta-teal py-3.5 text-center text-sm"
-            >
-              CSV · EVA
-            </a>
-            <a
-              href={`${csvBase}&formulary=NOT_EVA`}
-              className="rounded-xl bg-slate-700 py-3.5 text-center text-sm font-semibold text-white hover:bg-slate-800 shadow-sm"
-            >
-              CSV · Not EVA
-            </a>
-            <a
-              href={`${csvBase}&formulary=${formulary === 'all' ? 'all' : formulary}`}
-              className="rounded-xl border border-teal-400 bg-white/90 py-3.5 text-center text-sm font-semibold text-teal-900 hover:bg-teal-50"
-            >
-              CSV · current filter
-            </a>
-            <a
-              href="/templates/pharmacy-import-template.csv"
-              download="pharmacy-import-template.csv"
-              className="rounded-xl border-2 border-indigo-400 bg-indigo-50/90 py-3.5 text-center text-sm font-semibold text-indigo-900 hover:bg-indigo-100"
-            >
-              CSV template · قالب
-            </a>
+
+          <div>
+            <p className="text-xs font-semibold text-teal-900 mb-2">CSV</p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <a
+                href={`${exportBase}&format=csv&formulary=EVA`}
+                className="aid-cta-teal py-3.5 text-center text-sm"
+              >
+                CSV · EVA
+              </a>
+              <a
+                href={`${exportBase}&format=csv&formulary=NOT_EVA`}
+                className="rounded-xl bg-slate-700 py-3.5 text-center text-sm font-semibold text-white hover:bg-slate-800 shadow-sm"
+              >
+                CSV · Not EVA
+              </a>
+              <a
+                href={`${exportBase}&format=csv&formulary=${currentFormulary}`}
+                className="rounded-xl border border-teal-400 bg-white/90 py-3.5 text-center text-sm font-semibold text-teal-900 hover:bg-teal-50"
+              >
+                CSV · current filter
+              </a>
+              <a
+                href="/templates/pharmacy-import-template.csv"
+                download="pharmacy-import-template.csv"
+                className="rounded-xl border-2 border-indigo-400 bg-indigo-50/90 py-3.5 text-center text-sm font-semibold text-indigo-900 hover:bg-indigo-100"
+              >
+                CSV template · قالب
+              </a>
+            </div>
           </div>
+
+          <div>
+            <p className="text-xs font-semibold text-teal-900 mb-2">
+              PDF · تصدير PDF (print → Save as PDF)
+            </p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <a
+                href={`${exportBase}&format=pdf&formulary=EVA`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border-2 border-rose-300 bg-rose-50 py-3.5 text-center text-sm font-semibold text-rose-950 hover:bg-rose-100"
+              >
+                PDF · EVA
+              </a>
+              <a
+                href={`${exportBase}&format=pdf&formulary=NOT_EVA`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border-2 border-slate-400 bg-white py-3.5 text-center text-sm font-semibold text-slate-900 hover:bg-slate-50"
+              >
+                PDF · Not EVA
+              </a>
+              <a
+                href={`${exportBase}&format=pdf&formulary=${currentFormulary}`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl bg-rose-700 py-3.5 text-center text-sm font-semibold text-white hover:bg-rose-800 shadow-sm"
+              >
+                PDF · current filter
+              </a>
+            </div>
+            <p className="text-[11px] text-teal-900/80 mt-2">
+              Opens a print view · in the dialog choose <strong>Save as PDF</strong> /
+              حفظ كـ PDF
+            </p>
+          </div>
+
           <p className="text-xs text-teal-900/80 leading-relaxed">
             1) Export EVA / Not EVA · 2) Fill dispensed qty · 3) Import below · 4) Batch
             dispense when ready
