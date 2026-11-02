@@ -63,17 +63,18 @@ export async function GET(req: NextRequest) {
       const rows = lines.map((l) => ({
         patient: l.patient_name || '',
         employee: l.employee_name || '',
-        emp_id: l.external_employee_id || '',
-        med: l.matched_name || l.requested_name || '',
+        emp_id: l.employee_id || '',
+        med: l.drug_name || '',
         qty: l.qty ?? '',
-        status: l.status || '',
+        status: l.cycle_status || l.item_status || '',
         route: l.company_preferred ? 'EVA' : 'Not EVA',
         program: l.program_code || '',
       }));
 
       const html = buildPrintableHtml({
         title: `Pharmacy pick list · ${label}`,
-        subtitle: 'قائمة صرف الصيدلية · Export / Save as PDF from the print dialog',
+        subtitle:
+          'قائمة صرف الصيدلية · Export / Save as PDF from the print dialog',
         meta: [
           { label: 'Period', value: period || 'all' },
           { label: 'Route', value: formulary },
