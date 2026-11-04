@@ -240,6 +240,14 @@ export default function ClaimsPage() {
               {s.label}
             </button>
           ))}
+          <a
+            href={`/api/claims?status=${encodeURIComponent(status)}&format=pdf&limit=200`}
+            target="_blank"
+            rel="noreferrer"
+            className="min-h-[2.5rem] rounded-full px-3.5 py-1.5 text-xs font-semibold border-2 border-rose-300 bg-rose-50 text-rose-950 hover:bg-rose-100 ml-auto"
+          >
+            Export PDF · تصدير PDF
+          </a>
         </div>
 
         {msg && (
