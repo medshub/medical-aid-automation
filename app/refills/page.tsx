@@ -42,6 +42,7 @@ function defaultPeriod() {
 
 type RefillRow = Awaited<ReturnType<typeof listRefills>>[number] & {
   latest_risk?: string | null;
+  external_employee_id?: string | null;
 };
 
 export default async function RefillsPage({
@@ -71,6 +72,11 @@ export default async function RefillsPage({
     (r) => r.status === 'approved' || r.status === 'partially_approved'
   ).length;
 
+  const pdfQs = new URLSearchParams({ format: 'pdf', limit: '200' });
+  if (status) pdfQs.set('status', status);
+  if (period) pdfQs.set('period', period);
+  const pdfHref = `/api/refills?${pdfQs.toString()}`;
+
   return (
     <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
       <div className="mx-auto max-w-5xl space-y-5">
@@ -83,7 +89,7 @@ export default async function RefillsPage({
                 Refills
               </h1>
               <p className="text-sm text-slate-600" dir="rtl">
-                الدورات الشهرية · توليد ومراجعة
+                الدورات الشهرية · توليد ومراجعة · PDF
               </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
@@ -93,6 +99,14 @@ export default async function RefillsPage({
               >
                 ← Programs
               </Link>
+              <a
+                href={pdfHref}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 font-semibold text-rose-950 hover:bg-rose-100"
+              >
+                Export PDF
+              </a>
               <Link href="/pharmacy" className="aid-cta-teal px-3 py-2 text-sm">
                 Pharmacy CSV
               </Link>
@@ -138,6 +152,14 @@ export default async function RefillsPage({
             >
               Export pharmacy lists
             </Link>
+            <a
+              href={pdfHref}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-rose-800 hover:underline"
+            >
+              Export PDF · تصدير PDF
+            </a>
           </div>
         </div>
 
@@ -166,6 +188,14 @@ export default async function RefillsPage({
           >
             Filter
           </button>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-950 hover:bg-rose-100"
+          >
+            PDF
+          </a>
         </form>
 
         <div className="flex flex-wrap gap-2">
@@ -334,6 +364,14 @@ export default async function RefillsPage({
           >
             ← Programs
           </Link>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-950"
+          >
+            PDF
+          </a>
           <Link href="/pharmacy" className="aid-cta-teal flex-1 py-3 text-center text-sm">
             Pharmacy →
           </Link>
