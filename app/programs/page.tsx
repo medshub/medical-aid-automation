@@ -93,7 +93,10 @@ export default async function ProgramsPage({
         if (d !== 0) return d;
         return (a.program_code || '').localeCompare(b.program_code || '');
       });
-      if (risk === 'high') rows = rows.filter((r) => r.latest_risk === 'high' || r.latest_risk === 'critical');
+      if (risk === 'high')
+        rows = rows.filter(
+          (r) => r.latest_risk === 'high' || r.latest_risk === 'critical'
+        );
       else if (risk === 'unassessed') rows = rows.filter((r) => !r.latest_risk);
       else if (risk) rows = rows.filter((r) => r.latest_risk === risk);
     }
@@ -104,8 +107,15 @@ export default async function ProgramsPage({
   const activeCount = rows.filter((r) => r.status === 'active').length;
   const suspendedCount = rows.filter((r) => r.status === 'suspended').length;
   const highRiskCount = whoOn
-    ? rows.filter((r) => r.latest_risk === 'high' || r.latest_risk === 'critical').length
+    ? rows.filter(
+        (r) => r.latest_risk === 'high' || r.latest_risk === 'critical'
+      ).length
     : 0;
+
+  const pdfQs = new URLSearchParams({ format: 'pdf' });
+  pdfQs.set('status', status || 'active');
+  if (q) pdfQs.set('q', q);
+  const pdfHref = `/api/programs?${pdfQs.toString()}`;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
@@ -115,32 +125,91 @@ export default async function ProgramsPage({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="aid-section-label">Step 5 of 6 · Programs</p>
-              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Programs</h1>
-              <p className="text-sm text-slate-600" dir="rtl">البرامج المزمنة · بعد المعالجة</p>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+                Programs
+              </h1>
+              <p className="text-sm text-slate-600" dir="rtl">
+                البرامج المزمنة · بعد المعالجة · PDF
+              </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm">
-              <Link href="/eva-split" className="rounded-xl border border-white/80 bg-white/90 px-3 py-2 font-medium hover:bg-white backdrop-blur">
+              <Link
+                href="/eva-split"
+                className="rounded-xl border border-white/80 bg-white/90 px-3 py-2 font-medium hover:bg-white backdrop-blur"
+              >
                 ← EVA
               </Link>
-              <Link href="/refills" className="aid-cta-violet px-4 py-2 text-sm">Next: Refills →</Link>
+              <a
+                href={pdfHref}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 font-semibold text-rose-950 hover:bg-rose-100"
+              >
+                Export PDF
+              </a>
+              <Link href="/refills" className="aid-cta-violet px-4 py-2 text-sm">
+                Next: Refills →
+              </Link>
             </div>
           </div>
         </header>
 
-        <div className={`grid gap-2 text-center ${whoOn ? 'grid-cols-4' : 'grid-cols-3'}`}>
-          <div className="aid-kpi"><p className="text-xl font-bold text-slate-900">{rows.length}</p><p className="text-[11px] text-slate-500">shown</p></div>
-          <div className="aid-kpi"><p className="text-xl font-bold text-emerald-800">{activeCount}</p><p className="text-[11px] text-slate-500">active</p></div>
-          <div className="aid-kpi"><p className="text-xl font-bold text-amber-800">{suspendedCount}</p><p className="text-[11px] text-slate-500">suspended</p></div>
+        <div
+          className={`grid gap-2 text-center ${whoOn ? 'grid-cols-4' : 'grid-cols-3'}`}
+        >
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-slate-900">{rows.length}</p>
+            <p className="text-[11px] text-slate-500">shown</p>
+          </div>
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-emerald-800">{activeCount}</p>
+            <p className="text-[11px] text-slate-500">active</p>
+          </div>
+          <div className="aid-kpi">
+            <p className="text-xl font-bold text-amber-800">{suspendedCount}</p>
+            <p className="text-[11px] text-slate-500">suspended</p>
+          </div>
           {whoOn && (
-            <div className="aid-kpi"><p className="text-xl font-bold text-orange-800">{highRiskCount}</p><p className="text-[11px] text-slate-500">high risk</p></div>
+            <div className="aid-kpi">
+              <p className="text-xl font-bold text-orange-800">{highRiskCount}</p>
+              <p className="text-[11px] text-slate-500">high risk</p>
+            </div>
           )}
         </div>
 
-        <form method="get" className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm flex flex-wrap gap-2 items-center backdrop-blur">
-          <input name="q" defaultValue={q} placeholder="Search name, emp ID, program code…" className="flex-1 min-w-[200px] rounded-xl border border-slate-200 px-4 py-2.5 text-base" />
-          <FormSelectPicker name="status" defaultValue={status} options={PROGRAM_STATUS_OPTIONS} allowCreate={false} placeholder="Status…" className="min-w-[160px]" />
+        <form
+          method="get"
+          className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm flex flex-wrap gap-2 items-center backdrop-blur"
+        >
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder="Search name, emp ID, program code…"
+            className="flex-1 min-w-[200px] rounded-xl border border-slate-200 px-4 py-2.5 text-base"
+          />
+          <FormSelectPicker
+            name="status"
+            defaultValue={status}
+            options={PROGRAM_STATUS_OPTIONS}
+            allowCreate={false}
+            placeholder="Status…"
+            className="min-w-[160px]"
+          />
           {whoOn && risk ? <input type="hidden" name="risk" value={risk} /> : null}
-          <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white">Search</button>
+          <button
+            type="submit"
+            className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            Search
+          </button>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-950 hover:bg-rose-100"
+          >
+            PDF · تصدير
+          </a>
         </form>
 
         {error && (
@@ -152,24 +221,51 @@ export default async function ProgramsPage({
         {!error && rows.length === 0 && (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white/80 p-8 text-center text-sm text-slate-500">
             <p className="font-medium text-slate-700">No programs yet</p>
-            <p className="text-xs mt-1">Process intake on the <Link href="/intake-ops" className="text-violet-700 underline">queue</Link>.</p>
+            <p className="text-xs mt-1">
+              Process intake on the{' '}
+              <Link href="/intake-ops" className="text-violet-700 underline">
+                queue
+              </Link>
+              .
+            </p>
           </div>
         )}
 
         <div className="space-y-3 md:hidden">
           {rows.map((r) => (
-            <Link key={r.id} href={`/programs/${r.id}`} className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur">
+            <Link
+              key={r.id}
+              href={`/programs/${r.id}`}
+              className="block rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-2 hover:border-violet-300 backdrop-blur"
+            >
               <div className="flex justify-between gap-2">
-                <p className="font-semibold text-slate-900 truncate">{r.patient_name || '—'}</p>
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full h-fit ${statusStyle(r.status)}`}>{r.status}</span>
+                <p className="font-semibold text-slate-900 truncate">
+                  {r.patient_name || '—'}
+                </p>
+                <span
+                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full h-fit ${statusStyle(
+                    r.status
+                  )}`}
+                >
+                  {r.status}
+                </span>
               </div>
-              <p className="text-xs text-slate-500">{r.employee_name}{r.external_employee_id ? ` · ${r.external_employee_id}` : ''}</p>
+              <p className="text-xs text-slate-500">
+                {r.employee_name}
+                {r.external_employee_id ? ` · ${r.external_employee_id}` : ''}
+              </p>
               <p className="text-[11px] font-mono text-violet-700">{r.program_code}</p>
               <p className="text-xs text-slate-500">
                 {r.med_count ?? 0} meds · {r.refill_count ?? 0} refills
                 {(r.doc_count ?? 0) > 0 ? ` · ${r.doc_count} docs` : ''}
                 {whoOn && r.latest_risk ? (
-                  <span className={`ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(r.latest_risk)}`}>{r.latest_risk}</span>
+                  <span
+                    className={`ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(
+                      r.latest_risk
+                    )}`}
+                  >
+                    {r.latest_risk}
+                  </span>
                 ) : null}
               </p>
             </Link>
@@ -194,27 +290,40 @@ export default async function ProgramsPage({
                 {rows.map((r) => (
                   <tr key={r.id} className="border-t hover:bg-slate-50/80">
                     <td className="p-3 font-mono text-xs">
-                      <Link href={`/programs/${r.id}`} className="text-violet-700 font-medium hover:underline">
+                      <Link
+                        href={`/programs/${r.id}`}
+                        className="text-violet-700 font-medium hover:underline"
+                      >
                         {r.program_code}
                       </Link>
                     </td>
                     <td className="p-3">
                       <div className="font-medium">{r.employee_name}</div>
-                      <div className="text-xs text-slate-500">{r.external_employee_id}</div>
+                      <div className="text-xs text-slate-500">
+                        {r.external_employee_id}
+                      </div>
                     </td>
                     <td className="p-3">
                       <div>{r.patient_name}</div>
                       <div className="text-xs text-slate-500">{r.relation}</div>
                     </td>
                     <td className="p-3">
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusStyle(r.status)}`}>
+                      <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusStyle(
+                          r.status
+                        )}`}
+                      >
                         {r.status}
                       </span>
                     </td>
                     {whoOn && (
                       <td className="p-3">
                         {r.latest_risk ? (
-                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(r.latest_risk)}`}>
+                          <span
+                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${riskStyle(
+                              r.latest_risk
+                            )}`}
+                          >
                             {r.latest_risk}
                           </span>
                         ) : (
@@ -234,8 +343,23 @@ export default async function ProgramsPage({
 
       <div className="aid-sticky-bar">
         <div className="mx-auto max-w-5xl flex gap-2">
-          <Link href="/eva-split" className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">← EVA</Link>
-          <Link href="/refills" className="aid-cta-violet flex-1 py-3 text-center text-sm">Refills →</Link>
+          <Link
+            href="/eva-split"
+            className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
+          >
+            ← EVA
+          </Link>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-950"
+          >
+            PDF
+          </a>
+          <Link href="/refills" className="aid-cta-violet flex-1 py-3 text-center text-sm">
+            Refills →
+          </Link>
         </div>
       </div>
     </main>
