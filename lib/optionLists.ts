@@ -55,6 +55,14 @@ export const REFILL_STATUS_OPTIONS: PickerOption[] = labels([
   ['rejected', 'Rejected'],
 ]);
 
+export const PROGRAM_STATUS_OPTIONS: PickerOption[] = labels([
+  ['', 'All statuses'],
+  ['active', 'Active'],
+  ['suspended', 'Suspended'],
+  ['expired', 'Expired'],
+  ['cancelled', 'Cancelled'],
+]);
+
 export const STAFF_ROLE_OPTIONS: PickerOption[] = labels([
   ['admin', 'Admin'],
   ['operator', 'Operator'],
