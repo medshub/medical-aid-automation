@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type AuditEvent = {
   id: string;
@@ -44,23 +44,40 @@ export function AuditLogPanel() {
     load();
   }, [load]);
 
+  const pdfHref = useMemo(() => {
+    const qs = new URLSearchParams({ format: 'pdf', limit: '200' });
+    if (action.trim()) qs.set('action', action.trim());
+    if (org.trim()) qs.set('org', org.trim());
+    return `/api/admin/audit?${qs.toString()}`;
+  }, [action, org]);
+
   return (
     <section className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h2 className="font-semibold text-slate-900">Audit log</h2>
+          <h2 className="font-semibold text-slate-900">Staff activity log</h2>
           <p className="text-xs text-slate-500" dir="rtl">
-            سجل العمليات · enroll / claims / pharmacy / orgs
+            سجل نشاط الموظفين · enroll / claims / pharmacy / orgs
           </p>
         </div>
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
-        >
-          {loading ? '…' : 'Refresh'}
-        </button>
+        <div className="flex gap-2 shrink-0">
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-100"
+          >
+            Export PDF
+          </a>
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+          >
+            {loading ? '…' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -83,13 +100,23 @@ export function AuditLogPanel() {
         >
           Apply
         </button>
+        <a
+          href={pdfHref}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-950 hover:bg-rose-100"
+        >
+          PDF · تصدير
+        </a>
       </div>
 
       {error && (
         <p className="text-xs text-red-700 bg-red-50 rounded-lg px-2 py-1.5">{error}</p>
       )}
       {!events.length && !loading && !error && (
-        <p className="text-xs text-slate-400">No events yet — submit or process a request.</p>
+        <p className="text-xs text-slate-400">
+          No events yet — submit or process a request.
+        </p>
       )}
       <ul className="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs">
         {events.map((ev) => (
