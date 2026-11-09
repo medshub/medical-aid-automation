@@ -68,6 +68,19 @@ export default function AdminPage() {
               </Link>
             ))}
           </div>
+          <a
+            href="/api/ops/summary?format=pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 flex items-center justify-center rounded-xl border-2 px-3 py-2 text-xs font-semibold transition hover:opacity-90"
+            style={{
+              borderColor: '#fecdd3',
+              background: '#fff1f2',
+              color: '#9f1239',
+            }}
+          >
+            Monthly ops summary PDF · ملخص التشغيل
+          </a>
         </div>
 
         <AdminSearch />
