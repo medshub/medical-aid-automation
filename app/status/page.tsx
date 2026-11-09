@@ -286,6 +286,17 @@ export default async function StatusPage() {
                 </Link>{' '}
                 — dry-run when provider is set
               </li>
+              <li>
+                <a
+                  href="/api/ops/summary?format=pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline font-medium"
+                >
+                  Ops summary PDF
+                </a>{' '}
+                — month snapshot · ملخص التشغيل
+              </li>
             </ol>
           </div>
         )}
@@ -316,12 +327,46 @@ export default async function StatusPage() {
         <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 text-xs text-slate-600 space-y-1 shadow-sm">
           <p className="font-semibold text-slate-800">Integrations (optional)</p>
           <p>
-            DHIS2 HMIS: {health.dhis2?.push_ready ? 'push ready' : health.dhis2?.configured ? 'auth only' : 'off'} —{' '}
+            DHIS2 HMIS:{' '}
+            {health.dhis2?.push_ready
+              ? 'push ready'
+              : health.dhis2?.configured
+                ? 'auth only'
+                : 'off'}{' '}
+            —{' '}
             <Link href="/api/dhis2" className="text-violet-700 underline">
               /api/dhis2
             </Link>
           </p>
           <p>Docs: docs/dhis2.md · Neon remains system of record.</p>
+        </div>
+
+        <div className="rounded-2xl border-2 border-rose-200 bg-rose-50/90 p-4 space-y-2 shadow-sm">
+          <p className="text-sm font-semibold text-rose-950">
+            Monthly ops summary · ملخص التشغيل
+          </p>
+          <p className="text-xs text-rose-900/80">
+            Queue · claims · programs · refills snapshot for the current month (staff unlock
+            required).
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="/api/ops/summary?format=pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl bg-rose-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-800"
+            >
+              Export PDF · تصدير PDF
+            </a>
+            <a
+              href="/api/ops/summary"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-medium text-rose-900 hover:bg-rose-50"
+            >
+              JSON
+            </a>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3 text-sm justify-center">
