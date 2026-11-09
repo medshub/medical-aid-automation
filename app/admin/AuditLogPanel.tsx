@@ -44,8 +44,12 @@ export function AuditLogPanel() {
     load();
   }, [load]);
 
-  const pdfHref = useMemo(() => {
-    const qs = new URLSearchParams({ format: 'pdf', limit: '200' });
+  const reportHref = useMemo(() => {
+    const qs = new URLSearchParams({
+      format: 'pdf',
+      limit: '200',
+      report: '1',
+    });
     if (action.trim()) qs.set('action', action.trim());
     if (org.trim()) qs.set('org', org.trim());
     return `/api/admin/audit?${qs.toString()}`;
@@ -53,31 +57,50 @@ export function AuditLogPanel() {
 
   return (
     <section className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
           <h2 className="font-semibold text-slate-900">Staff activity log</h2>
           <p className="text-xs text-slate-500" dir="rtl">
             سجل نشاط الموظفين · enroll / claims / pharmacy / orgs
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex flex-wrap gap-2 shrink-0">
           <a
-            href={pdfHref}
+            href={reportHref}
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-100"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-violet-700 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-violet-800"
+            title="Open printable staff activity report"
           >
-            Export PDF
+            <span aria-hidden>📋</span>
+            Report · تقرير
           </a>
           <button
             type="button"
             onClick={load}
             disabled={loading}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold disabled:opacity-50"
           >
             {loading ? '…' : 'Refresh'}
           </button>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-violet-100 bg-violet-50/80 px-3 py-2.5 flex flex-wrap items-center gap-2">
+        <p className="text-[11px] text-violet-900 flex-1 min-w-[12rem]">
+          Generate a printable report of recent staff actions (respects filters).
+          <span className="block text-violet-800/80" dir="rtl">
+            تقرير قابل للطباعة · احفظه كـ PDF من نافذة الطباعة
+          </span>
+        </p>
+        <a
+          href={reportHref}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-lg bg-violet-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-800"
+        >
+          Open report
+        </a>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -101,12 +124,12 @@ export function AuditLogPanel() {
           Apply
         </button>
         <a
-          href={pdfHref}
+          href={reportHref}
           target="_blank"
           rel="noreferrer"
-          className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-950 hover:bg-rose-100"
+          className="rounded-xl border-2 border-violet-300 bg-white px-3 py-2 text-xs font-semibold text-violet-900 hover:bg-violet-50"
         >
-          PDF · تصدير
+          Report PDF
         </a>
       </div>
 
@@ -116,6 +139,13 @@ export function AuditLogPanel() {
       {!events.length && !loading && !error && (
         <p className="text-xs text-slate-400">
           No events yet — submit or process a request.
+        </p>
+      )}
+      {events.length > 0 && (
+        <p className="text-[11px] text-slate-500">
+          Showing {events.length} event{events.length === 1 ? '' : 's'}
+          {action.trim() || org.trim() ? ' (filtered)' : ''} · report exports up to
+          200
         </p>
       )}
       <ul className="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs">
