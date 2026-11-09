@@ -147,6 +147,9 @@ export default function IntakeOpsPage() {
   );
 
   const waiting = status === 'submitted' ? rows.length : 0;
+  const pdfHref = `/api/intake?status=${encodeURIComponent(status)}&format=pdf&limit=200${
+    q.trim() ? `&q=${encodeURIComponent(q.trim())}` : ''
+  }`;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 text-slate-900 pb-28 md:pb-16">
@@ -156,26 +159,40 @@ export default function IntakeOpsPage() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="aid-section-label">Step 1 of 6 · Queue</p>
-              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">Queue</h1>
+              <h1 className="aid-display text-3xl sm:text-4xl font-semibold tracking-tight">
+                Queue
+              </h1>
               <p className="text-sm text-slate-600 mt-0.5" dir="rtl">
-                طابور الطلبات · عالج ثم انتقل للمطالبات
+                طابور الطلبات · عالج ثم انتقل للمطالبات · PDF
               </p>
             </div>
-            <button
-              type="button"
-              onClick={load}
-              disabled={loading}
-              className="rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-50 backdrop-blur"
-            >
-              {loading ? 'Refreshing…' : 'Refresh'}
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={pdfHref}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-950 hover:bg-rose-100"
+              >
+                Export PDF
+              </a>
+              <button
+                type="button"
+                onClick={load}
+                disabled={loading}
+                className="rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-50 backdrop-blur"
+              >
+                {loading ? 'Refreshing…' : 'Refresh'}
+              </button>
+            </div>
           </div>
         </header>
 
         <div className="rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-white/90 p-5 shadow-sm space-y-4 backdrop-blur">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-sm font-semibold text-violet-950">Process waiting requests</p>
+              <p className="text-sm font-semibold text-violet-950">
+                Process waiting requests
+              </p>
               <p className="text-xs text-violet-800 mt-0.5">
                 Matches meds · enrolls programs · creates claim drafts
               </p>
@@ -204,12 +221,22 @@ export default function IntakeOpsPage() {
             >
               Pharmacy
             </Link>
+            <a
+              href={pdfHref}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-950 hover:bg-rose-100"
+            >
+              PDF · تصدير
+            </a>
           </div>
         </div>
 
         <div className="rounded-2xl border border-white/80 bg-white/90 p-3 shadow-sm space-y-3 backdrop-blur">
           <div>
-            <label className="text-xs font-semibold text-slate-600">Status · الحالة</label>
+            <label className="text-xs font-semibold text-slate-600">
+              Status · الحالة
+            </label>
             <SearchablePicker
               value={status}
               onChange={setStatus}
@@ -219,7 +246,9 @@ export default function IntakeOpsPage() {
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-600">Search rows · بحث</label>
+            <label className="text-xs font-semibold text-slate-600">
+              Search rows · بحث
+            </label>
             <div className="relative mt-1">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
                 ⌕
@@ -249,7 +278,7 @@ export default function IntakeOpsPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {FILTERS.map((s) => (
             <button
               key={s.id}
@@ -264,6 +293,14 @@ export default function IntakeOpsPage() {
               {s.label}
             </button>
           ))}
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="min-h-[2.5rem] rounded-full px-3.5 py-1.5 text-xs font-semibold border-2 border-rose-300 bg-rose-50 text-rose-950 hover:bg-rose-100 ml-auto"
+          >
+            Export PDF · تصدير PDF
+          </a>
         </div>
 
         {error && (
@@ -280,7 +317,9 @@ export default function IntakeOpsPage() {
         )}
 
         {loading && (
-          <p className="text-sm text-slate-500 animate-pulse text-center py-4">Loading queue…</p>
+          <p className="text-sm text-slate-500 animate-pulse text-center py-4">
+            Loading queue…
+          </p>
         )}
 
         <div className="space-y-3 md:hidden">
@@ -294,8 +333,12 @@ export default function IntakeOpsPage() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="font-semibold text-slate-900 truncate">{r.emp_name || '—'}</p>
-                    <p className="text-xs text-slate-500 font-mono">{r.emp_id || 'no emp ID'}</p>
+                    <p className="font-semibold text-slate-900 truncate">
+                      {r.emp_name || '—'}
+                    </p>
+                    <p className="text-xs text-slate-500 font-mono">
+                      {r.emp_id || 'no emp ID'}
+                    </p>
                   </div>
                   <div className="text-right shrink-0 space-y-1">
                     <span
@@ -309,7 +352,8 @@ export default function IntakeOpsPage() {
                   </div>
                 </div>
                 <p className="text-sm text-slate-600">
-                  <span className="text-slate-400">Patient</span> {r.patient_name || '—'}
+                  <span className="text-slate-400">Patient</span>{' '}
+                  {r.patient_name || '—'}
                 </p>
                 {names.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -322,7 +366,9 @@ export default function IntakeOpsPage() {
                       </span>
                     ))}
                     {names.length > 4 && (
-                      <span className="text-[11px] text-slate-400">+{names.length - 4}</span>
+                      <span className="text-[11px] text-slate-400">
+                        +{names.length - 4}
+                      </span>
                     )}
                   </div>
                 )}
@@ -360,13 +406,19 @@ export default function IntakeOpsPage() {
                   </p>
                   <p className="font-medium text-slate-700">Queue is clear</p>
                   <p className="text-xs">Nothing waiting to process</p>
-                  <Link href="/claims" className="inline-block mt-2 text-violet-700 font-semibold">
+                  <Link
+                    href="/claims"
+                    className="inline-block mt-2 text-violet-700 font-semibold"
+                  >
                     Continue to Claims →
                   </Link>
                 </>
               ) : (
                 <>
-                  <p>No “{FILTERS.find((f) => f.id === status)?.label || status}” rows.</p>
+                  <p>
+                    No “{FILTERS.find((f) => f.id === status)?.label || status}”
+                    rows.
+                  </p>
                   <Link href="/intake" className="text-emerald-700 font-medium underline">
                     Submit a test request
                   </Link>
@@ -405,7 +457,9 @@ export default function IntakeOpsPage() {
                     </td>
                     <td className="p-3">
                       <div className="font-medium">{r.emp_name}</div>
-                      <div className="text-xs font-mono text-slate-500">{r.emp_id || '—'}</div>
+                      <div className="text-xs font-mono text-slate-500">
+                        {r.emp_id || '—'}
+                      </div>
                     </td>
                     <td className="p-3">{r.patient_name || '—'}</td>
                     <td className="p-3 text-xs max-w-[240px] text-slate-600">
@@ -498,6 +552,14 @@ export default function IntakeOpsPage() {
           >
             Admin
           </Link>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-950"
+          >
+            PDF
+          </a>
           <Link href="/claims" className="aid-cta-violet flex-1 py-3 text-center text-sm">
             Claims →
           </Link>
