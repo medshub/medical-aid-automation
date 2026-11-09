@@ -13,8 +13,23 @@ import {
 import { authorizeRequest, unauthorizedResponse } from '@/lib/auth';
 import { jsonError } from '@/lib/errors';
 import { rateLimit, clientKey, rateLimitHeaders } from '@/lib/rateLimit';
+import { buildPrintableHtml, pdfHtmlResponse } from '@/lib/exportPdf';
 
 export const dynamic = 'force-dynamic';
+
+function medSummary(meds: unknown): string {
+  if (!Array.isArray(meds)) return '';
+  return meds
+    .map((m) =>
+      typeof m === 'object' && m && 'name' in m
+        ? `${(m as { name: string }).name}${
+            (m as { qty?: number }).qty ? ` ×${(m as { qty?: number }).qty}` : ''
+          }`
+        : String(m)
+    )
+    .join('; ')
+    .slice(0, 200);
+}
 
 /**
  * GET /api/intake — ops list only (auth required)
@@ -34,19 +49,64 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(u.body, { status: u.status });
     }
     const sp = req.nextUrl.searchParams;
+    const format = (sp.get('format') || 'json').toLowerCase();
+    const autoPrint = sp.get('autoprint') !== '0';
+    const status = sp.get('status') || 'all';
+    const q = sp.get('q') || undefined;
+    const limit = Number(sp.get('limit') || (format === 'pdf' ? 200 : 50));
+
     const { resolveOrgScope } = await import('@/lib/orgScope');
     const scope = await resolveOrgScope(req);
     const rows = await listAidRequests({
-      status: sp.get('status') || 'all',
-      q: sp.get('q') || undefined,
-      limit: Number(sp.get('limit') || 50),
+      status,
+      q,
+      limit,
       org_codes: scope.all ? undefined : scope.org_codes,
     });
+
+    if (format === 'pdf' || format === 'print') {
+      const html = buildPrintableHtml({
+        title: `Intake queue · ${status}`,
+        subtitle: 'طابور الطلبات · Save as PDF from the print dialog',
+        meta: [
+          { label: 'Status', value: status },
+          { label: 'Search', value: q || '—' },
+          { label: 'Rows', value: String(rows.length) },
+        ],
+        columns: [
+          { key: 'id', label: 'ID' },
+          { key: 'status', label: 'Status' },
+          { key: 'emp_name', label: 'Employee' },
+          { key: 'emp_id', label: 'Emp ID' },
+          { key: 'patient_name', label: 'Patient' },
+          { key: 'meds', label: 'Medicines' },
+          { key: 'created_at', label: 'Submitted' },
+        ],
+        rows: rows.map((r: Record<string, unknown>) => ({
+          id: String(r.id || '').slice(0, 8),
+          status: r.status || '',
+          emp_name: r.emp_name || '',
+          emp_id: r.emp_id || '',
+          patient_name: r.patient_name || '',
+          meds: medSummary(r.meds),
+          created_at: r.created_at
+            ? String(r.created_at).slice(0, 16).replace('T', ' ')
+            : '',
+        })),
+        autoPrint,
+      });
+      return pdfHtmlResponse(html, `intake-queue-${status}.pdf.html`);
+    }
+
     return NextResponse.json({
       ok: true,
       count: rows.length,
       requests: rows,
-      org_scope: { all: scope.all, org_codes: scope.org_codes, source: scope.source },
+      org_scope: {
+        all: scope.all,
+        org_codes: scope.org_codes,
+        source: scope.source,
+      },
     });
   } catch (e: unknown) {
     const { body, status } = jsonError(e);
@@ -74,7 +134,11 @@ export async function POST(req: NextRequest) {
       });
       if (!rl.ok) {
         return NextResponse.json(
-          { ok: false, error: 'Too many requests — try again in a minute', code: 'rate_limited' },
+          {
+            ok: false,
+            error: 'Too many requests — try again in a minute',
+            code: 'rate_limited',
+          },
           { status: 429, headers: rateLimitHeaders(rl) }
         );
       }
@@ -104,7 +168,11 @@ export async function POST(req: NextRequest) {
       const msh = await mshSearchMedicines(q, limit);
       return NextResponse.json({
         ...msh,
-        source: msh.items.length ? 'msh' : eg.error ? 'none' : 'egyptian-drug-database',
+        source: msh.items.length
+          ? 'msh'
+          : eg.error
+            ? 'none'
+            : 'egyptian-drug-database',
         egyptian_error: eg.error,
       });
     }
