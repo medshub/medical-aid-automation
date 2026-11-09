@@ -23,7 +23,9 @@ export function OrgRequestsPanel() {
     setLoading(true);
     setMsg(null);
     try {
-      const res = await fetch('/api/admin/org-requests', { credentials: 'include' });
+      const res = await fetch('/api/admin/org-requests', {
+        credentials: 'include',
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
       setRequests(data.requests || []);
@@ -62,6 +64,8 @@ export function OrgRequestsPanel() {
     }
   }
 
+  const pdfHref = '/api/admin/org-requests?format=pdf&status=pending';
+
   return (
     <section className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-4 shadow-sm space-y-3">
       <div className="flex items-start justify-between gap-2">
@@ -75,14 +79,24 @@ export function OrgRequestsPanel() {
               : ' — new orgs auto-activate (set ORG_REGISTRATION_MODE=approval to queue)'}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-2 shrink-0">
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border-2 border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-100"
+          >
+            Export PDF
+          </a>
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {msg && (
@@ -92,7 +106,17 @@ export function OrgRequestsPanel() {
       )}
 
       {!requests.length ? (
-        <p className="text-xs text-slate-400">No pending organization registrations.</p>
+        <p className="text-xs text-slate-400">
+          No pending organization registrations.{' '}
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noreferrer"
+            className="text-rose-800 font-medium underline"
+          >
+            PDF anyway
+          </a>
+        </p>
       ) : (
         <ul className="space-y-3">
           {requests.map((r) => (
