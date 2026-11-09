@@ -3,10 +3,11 @@ import { authorizeRequest, unauthorizedResponse } from '@/lib/auth';
 import { ensureAuditTable } from '@/lib/audit';
 import { query } from '@/lib/db';
 import { jsonError } from '@/lib/errors';
+import { buildPrintableHtml, pdfHtmlResponse } from '@/lib/exportPdf';
 
 export const dynamic = 'force-dynamic';
 
-/** GET /api/admin/audit?limit=50&action=&org= */
+/** GET /api/admin/audit?limit=50&action=&org=&format=pdf */
 export async function GET(req: NextRequest) {
   try {
     if (!authorizeRequest(req)) {
@@ -15,7 +16,12 @@ export async function GET(req: NextRequest) {
     }
     await ensureAuditTable();
     const sp = req.nextUrl.searchParams;
-    const limit = Math.min(Number(sp.get('limit') || 50), 200);
+    const format = (sp.get('format') || 'json').toLowerCase();
+    const autoPrint = sp.get('autoprint') !== '0';
+    const limit = Math.min(
+      Number(sp.get('limit') || (format === 'pdf' ? 200 : 50)),
+      500
+    );
     const action = sp.get('action')?.trim();
     const org = sp.get('org')?.trim();
     const params: unknown[] = [];
@@ -37,7 +43,55 @@ export async function GET(req: NextRequest) {
        LIMIT $${params.length}`,
       params
     );
-    return NextResponse.json({ ok: true, count: res.rows.length, events: res.rows });
+
+    if (format === 'pdf' || format === 'print') {
+      const html = buildPrintableHtml({
+        title: 'Staff activity log',
+        subtitle:
+          'سجل نشاط الموظفين · audit_events · Save as PDF from the print dialog',
+        meta: [
+          { label: 'Action filter', value: action || 'all' },
+          { label: 'Org filter', value: org || 'all' },
+          { label: 'Rows', value: String(res.rows.length) },
+          {
+            label: 'Generated',
+            value: new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC',
+          },
+        ],
+        columns: [
+          { key: 'at', label: 'When' },
+          { key: 'actor', label: 'Actor' },
+          { key: 'action', label: 'Action' },
+          { key: 'org_code', label: 'Org' },
+          { key: 'entity', label: 'Entity' },
+        ],
+        rows: res.rows.map((r: Record<string, unknown>) => ({
+          at: String(r.at || '')
+            .replace('T', ' ')
+            .slice(0, 19),
+          actor: r.actor || '—',
+          action: r.action || '',
+          org_code: r.org_code || '—',
+          entity: [
+            r.entity_type || '',
+            r.entity_id ? String(r.entity_id).slice(0, 8) : '',
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        })),
+        footerNote:
+          'Internal staff activity only · not for public distribution',
+        autoPrint,
+      });
+      const label = [action || 'all', org || 'all'].join('-');
+      return pdfHtmlResponse(html, `staff-activity-${label}.pdf.html`);
+    }
+
+    return NextResponse.json({
+      ok: true,
+      count: res.rows.length,
+      events: res.rows,
+    });
   } catch (e: unknown) {
     const { body, status } = jsonError(e);
     return NextResponse.json(body, { status });
