@@ -7,7 +7,7 @@ import { buildPrintableHtml, pdfHtmlResponse } from '@/lib/exportPdf';
 
 export const dynamic = 'force-dynamic';
 
-/** GET /api/admin/audit?limit=50&action=&org=&format=pdf */
+/** GET /api/admin/audit?limit=50&action=&org=&format=pdf&report=1 */
 export async function GET(req: NextRequest) {
   try {
     if (!authorizeRequest(req)) {
@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
     await ensureAuditTable();
     const sp = req.nextUrl.searchParams;
     const format = (sp.get('format') || 'json').toLowerCase();
+    const asReport = sp.get('report') === '1' || sp.get('report') === 'true';
     const autoPrint = sp.get('autoprint') !== '0';
     const limit = Math.min(
       Number(sp.get('limit') || (format === 'pdf' ? 200 : 50)),
@@ -46,16 +47,19 @@ export async function GET(req: NextRequest) {
 
     if (format === 'pdf' || format === 'print') {
       const html = buildPrintableHtml({
-        title: 'Staff activity log',
-        subtitle:
-          'سجل نشاط الموظفين · audit_events · Save as PDF from the print dialog',
+        title: asReport ? 'Staff activity report' : 'Staff activity log',
+        subtitle: asReport
+          ? 'تقرير نشاط الموظفين · printable ops report · Save as PDF from the print dialog'
+          : 'سجل نشاط الموظفين · audit_events · Save as PDF from the print dialog',
         meta: [
+          { label: 'Document', value: asReport ? 'Activity report' : 'Activity log' },
           { label: 'Action filter', value: action || 'all' },
           { label: 'Org filter', value: org || 'all' },
           { label: 'Rows', value: String(res.rows.length) },
           {
             label: 'Generated',
-            value: new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC',
+            value:
+              new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC',
           },
         ],
         columns: [
@@ -84,7 +88,12 @@ export async function GET(req: NextRequest) {
         autoPrint,
       });
       const label = [action || 'all', org || 'all'].join('-');
-      return pdfHtmlResponse(html, `staff-activity-${label}.pdf.html`);
+      return pdfHtmlResponse(
+        html,
+        asReport
+          ? `staff-activity-report-${label}.pdf.html`
+          : `staff-activity-${label}.pdf.html`
+      );
     }
 
     return NextResponse.json({
