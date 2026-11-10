@@ -26,40 +26,6 @@ function periodNow() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-const PDF_LINKS = [
-  {
-    href: '/api/ops/summary?format=pdf',
-    label: 'Ops summary',
-    ar: 'ملخص التشغيل',
-  },
-  {
-    href: '/api/admin/audit?format=pdf&report=1&limit=200',
-    label: 'Staff activity report',
-    ar: 'تقرير النشاط',
-  },
-  {
-    href: '/api/admin/org-requests?format=pdf&status=pending',
-    label: 'Org requests',
-    ar: 'طلبات المؤسسات',
-  },
-  {
-    href: () => `/api/reports/monthly?period=${periodNow()}&format=pdf`,
-    label: 'Monthly meds',
-    ar: 'صرف شهري',
-  },
-  {
-    href: '/api/reports/medications?format=pdf',
-    label: 'Chronic catalog',
-    ar: 'كتالوج مزمن',
-  },
-  {
-    href: '/reports',
-    label: 'Reports page',
-    ar: 'صفحة التقارير',
-    page: true,
-  },
-] as const;
-
 export default function AdminPage() {
   const neonOk = neonAuthConfigured();
   const allowlist = getAllowedStaffEmails();
@@ -207,7 +173,7 @@ export default function AdminPage() {
               </span>
             </a>
             <a
-              href={`/api/intake?status=submitted&format=pdf&limit=200`}
+              href="/api/intake?status=submitted&format=pdf&limit=200"
               target="_blank"
               rel="noreferrer"
               className="rounded-xl border border-violet-200 bg-white px-2 py-2 text-center text-[11px] font-semibold text-violet-950 hover:bg-violet-50"
