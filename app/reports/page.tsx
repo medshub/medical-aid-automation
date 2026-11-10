@@ -47,17 +47,26 @@ export default async function ReportsPage({
                 Medicine reports · تقارير الأدوية
               </h1>
               <p className="text-sm text-slate-600">
-                Monthly dispense · chronic catalog · CSV · {period}
+                Monthly dispense · chronic catalog · CSV · PDF · {period}
               </p>
             </div>
             <div className="hidden sm:flex flex-wrap gap-2 text-sm items-center">
-              <Link href="/refills" className="rounded-xl border bg-white px-3 py-2 font-medium hover:bg-slate-50">
+              <Link
+                href="/refills"
+                className="rounded-xl border bg-white px-3 py-2 font-medium hover:bg-slate-50"
+              >
                 ← Refills
               </Link>
-              <Link href="/pharmacy" className="rounded-xl border bg-white px-3 py-2 font-medium hover:bg-slate-50">
+              <Link
+                href="/pharmacy"
+                className="rounded-xl border bg-white px-3 py-2 font-medium hover:bg-slate-50"
+              >
                 Pharmacy
               </Link>
-              <Link href="/programs" className="rounded-xl bg-violet-700 px-3 py-2 font-semibold text-white">
+              <Link
+                href="/programs"
+                className="rounded-xl bg-violet-700 px-3 py-2 font-semibold text-white"
+              >
                 Programs →
               </Link>
             </div>
@@ -69,10 +78,10 @@ export default async function ReportsPage({
           <p className="text-xs sm:text-sm text-slate-600">
             <strong>Monthly</strong> = this period's refill cycles and costs ·{' '}
             <strong>Chronic meds</strong> = active program catalog (EVA vs not).
-            Download CSV for finance or pharmacy planning.
+            Download <strong>CSV</strong> or open <strong>PDF</strong> (print → Save as PDF).
           </p>
           <p className="text-xs text-slate-500" dir="rtl">
-            الصرف الشهري للفترة · المستحضرات المزمنة النشطة · تنزيل CSV
+            الصرف الشهري للفترة · المستحضرات المزمنة النشطة · CSV · PDF
           </p>
         </div>
 
@@ -133,6 +142,14 @@ export default async function ReportsPage({
                 className="rounded bg-emerald-600 px-3 py-1 text-white text-sm hover:bg-emerald-700"
               >
                 CSV · monthly
+              </a>
+              <a
+                href={`/api/reports/monthly?period=${period}&format=pdf`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded bg-violet-700 px-3 py-1 text-white text-sm hover:bg-violet-800 font-semibold"
+              >
+                PDF · تقرير
               </a>
             </div>
 
@@ -200,20 +217,28 @@ export default async function ReportsPage({
                         </tr>
                       </thead>
                       <tbody>
-                        {monthly.cycles.map((c: any) => (
-                          <tr key={c.id} className="border-t">
+                        {monthly.cycles.map((c: Record<string, unknown>) => (
+                          <tr key={String(c.id)} className="border-t">
                             <td className="p-2 font-mono text-xs">
                               <Link
                                 href={`/refills/${c.id}`}
                                 className="text-blue-600 hover:underline"
                               >
-                                {c.program_code}
+                                {String(c.program_code)}
                               </Link>
                             </td>
-                            <td className="p-2">{c.patient_name}</td>
-                            <td className="p-2 text-xs">{c.status}</td>
-                            <td className="p-2">{c.estimated_total_egp ?? '—'}</td>
-                            <td className="p-2">{c.approved_total_egp ?? '—'}</td>
+                            <td className="p-2">{String(c.patient_name)}</td>
+                            <td className="p-2 text-xs">{String(c.status)}</td>
+                            <td className="p-2">
+                              {c.estimated_total_egp != null
+                                ? String(c.estimated_total_egp)
+                                : '—'}
+                            </td>
+                            <td className="p-2">
+                              {c.approved_total_egp != null
+                                ? String(c.approved_total_egp)
+                                : '—'}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -233,6 +258,14 @@ export default async function ReportsPage({
                 className="rounded bg-emerald-600 px-3 py-1 text-white text-sm hover:bg-emerald-700"
               >
                 CSV · chronic meds
+              </a>
+              <a
+                href="/api/reports/medications?format=pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded bg-violet-700 px-3 py-1 text-white text-sm hover:bg-violet-800 font-semibold"
+              >
+                PDF · تقرير
               </a>
               <span className="text-xs text-slate-500 self-center">
                 generated {meds.generated_at.slice(0, 19).replace('T', ' ')} UTC
@@ -323,7 +356,7 @@ export default async function ReportsPage({
         <p className="text-xs text-slate-400">
           Automation: Vercel Cron day 2 · 06:00 UTC · GitHub Action Monthly Medication
           Report · APIs <code>/api/reports/monthly</code> ·{' '}
-          <code>/api/reports/medications</code>
+          <code>/api/reports/medications</code> · format=csv|pdf
         </p>
       </div>
 
