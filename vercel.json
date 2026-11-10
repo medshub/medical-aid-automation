@@ -13,6 +13,10 @@
       "schedule": "30 6 * * *"
     },
     {
+      "path": "/api/ops/monthly-run",
+      "schedule": "15 5 1 * *"
+    },
+    {
       "path": "/api/cron/monthly-refills",
       "schedule": "0 5 1 * *"
     },
