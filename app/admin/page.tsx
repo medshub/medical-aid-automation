@@ -10,6 +10,7 @@ import { AuditLogPanel } from './AuditLogPanel';
 import { OrgRequestsPanel } from './OrgRequestsPanel';
 import { OrgsListPanel } from './OrgsListPanel';
 import { OrgMembersPanel } from './OrgMembersPanel';
+import { MonthlyRunPanel } from './MonthlyRunPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -111,6 +112,8 @@ export default function AdminPage() {
             </Link>
           </div>
         </div>
+
+        <MonthlyRunPanel />
 
         <div
           className="rounded-2xl border-2 p-3 shadow-sm space-y-2"
