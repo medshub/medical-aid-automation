@@ -13,12 +13,14 @@ import { OrgMembersPanel } from './OrgMembersPanel';
 
 export const dynamic = 'force-dynamic';
 
+/** Matches FlowSteps staff path 1–6 */
 const OPS_PATH = [
   { href: '/intake-ops', n: '1', label: 'Queue', ar: 'الطابور' },
   { href: '/claims', n: '2', label: 'Claims', ar: 'المطالبات' },
   { href: '/pharmacy', n: '3', label: 'Pharmacy', ar: 'الصيدلية' },
-  { href: '/programs', n: '4', label: 'Programs', ar: 'البرامج' },
-  { href: '/refills', n: '5', label: 'Refills', ar: 'الصرف' },
+  { href: '/eva-split', n: '4', label: 'EVA', ar: 'إيفا' },
+  { href: '/programs', n: '5', label: 'Programs', ar: 'البرامج' },
+  { href: '/refills', n: '6', label: 'Refills', ar: 'الصرف' },
 ] as const;
 
 function periodNow() {
@@ -59,9 +61,9 @@ export default function AdminPage() {
             className="text-[11px] font-semibold uppercase tracking-wide mb-2 px-1"
             style={{ color: 'var(--aid-muted)' }}
           >
-            Monthly path · المسار الشهري
+            Monthly path · 1–6 · المسار الشهري
           </p>
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
             {OPS_PATH.map((s) => (
               <Link
                 key={s.href}
@@ -90,6 +92,23 @@ export default function AdminPage() {
                 </div>
               </Link>
             ))}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+            <Link
+              href="/guide#for-staff"
+              className="font-medium hover:underline"
+              style={{ color: 'var(--aid-emerald)' }}
+            >
+              Staff guide
+            </Link>
+            <span style={{ color: 'var(--aid-muted)' }}>·</span>
+            <Link href="/status" className="hover:underline">
+              System status
+            </Link>
+            <span style={{ color: 'var(--aid-muted)' }}>·</span>
+            <Link href="/notifications" className="hover:underline">
+              WhatsApp
+            </Link>
           </div>
         </div>
 
