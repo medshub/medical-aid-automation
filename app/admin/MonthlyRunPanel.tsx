@@ -53,43 +53,53 @@ export function MonthlyRunPanel() {
 
   return (
     <section
-      className="rounded-2xl border-2 p-4 shadow-sm space-y-3"
+      id="start-automation"
+      className="rounded-2xl border-2 p-4 shadow-sm space-y-3 scroll-mt-24"
       style={{
-        borderColor: '#a7f3d0',
-        background: 'linear-gradient(135deg,#ecfdf5 0%,#ffffff 100%)',
+        borderColor: '#6ee7b7',
+        background: 'linear-gradient(135deg,#d1fae5 0%,#ffffff 55%)',
       }}
     >
       <div>
-        <h2 className="font-semibold text-emerald-950">
-          Monthly automation · أتمتة شهرية
-        </h2>
-        <p className="text-xs text-emerald-900/80 mt-1">
-          Safe steps only: process queue → enroll + claim drafts → generate
-          refills → report snapshot. Does <strong>not</strong> submit claims or
-          dispense.
+        <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800">
+          One click · نقرة واحدة
         </p>
-        <p className="text-[11px] text-emerald-800/70 mt-1" dir="rtl">
-          آمن: معالجة الطابور ومسودات المطالبات وتوليد الصرف — بدون إرسال
-          المطالبات أو الصرف الفعلي
+        <h2 className="text-lg font-bold text-emerald-950">
+          Start monthly automation
+        </h2>
+        <p className="text-sm font-medium text-emerald-900" dir="rtl">
+          ابدأ الأتمتة الشهرية
+        </p>
+        <p className="text-xs text-emerald-900/80 mt-1.5">
+          Processes the waiting queue (enroll + claim drafts), generates this
+          month's refills, and takes a report snapshot. Does{' '}
+          <strong>not</strong> submit claims or dispense medicines.
         </p>
       </div>
+
+      <button
+        type="button"
+        disabled={loading}
+        onClick={() => run(false)}
+        className="w-full rounded-2xl bg-emerald-700 px-4 py-4 text-base font-bold text-white shadow-lg shadow-emerald-700/25 hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {loading ? (
+          <span>Running automation… · جاري التشغيل…</span>
+        ) : (
+          <span>
+            ▶ Start automation · ابدأ الأتمتة
+          </span>
+        )}
+      </button>
 
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           disabled={loading}
-          onClick={() => run(false)}
-          className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
-        >
-          {loading ? 'Running…' : 'Run monthly automation'}
-        </button>
-        <button
-          type="button"
-          disabled={loading}
           onClick={() => run(true)}
-          className="rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-xs font-semibold text-emerald-900 hover:bg-emerald-50 disabled:opacity-50"
+          className="flex-1 min-w-[8rem] rounded-xl border-2 border-emerald-400 bg-white px-3 py-2.5 text-xs font-semibold text-emerald-950 hover:bg-emerald-50 disabled:opacity-50"
         >
-          Dry run
+          Dry run first · تجربة بدون حفظ
         </button>
         <Link
           href="/claims"
@@ -103,6 +113,12 @@ export function MonthlyRunPanel() {
         >
           Pharmacy →
         </Link>
+        <Link
+          href="/refills"
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Refills →
+        </Link>
       </div>
 
       {result?.error && (
@@ -112,10 +128,10 @@ export function MonthlyRunPanel() {
       )}
 
       {result && !result.error && (
-        <div className="rounded-xl border border-emerald-200 bg-white/90 p-3 text-xs space-y-2">
+        <div className="rounded-xl border border-emerald-200 bg-white/95 p-3 text-xs space-y-2">
           <p className="font-semibold text-emerald-950">
-            {result.dryRun ? 'Dry run' : 'Live run'} · {result.period}{' '}
-            {result.ok ? '✓' : '✗'}
+            {result.dryRun ? 'Dry run result' : 'Live run result'} ·{' '}
+            {result.period} {result.ok ? '✓' : '✗'}
             {result.partial ? ' (partial)' : ''}
           </p>
           {intake && (
@@ -155,8 +171,8 @@ export function MonthlyRunPanel() {
         </div>
       )}
 
-      <p className="text-[10px] text-emerald-800/60">
-        Also scheduled: day 1 · 05:15 UTC ·{' '}
+      <p className="text-[10px] text-emerald-800/70">
+        Scheduled automatically: day 1 of month · 05:15 UTC ·{' '}
         <code className="bg-white/80 px-1 rounded">/api/ops/monthly-run</code>
       </p>
     </section>
