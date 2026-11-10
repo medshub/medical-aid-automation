@@ -71,9 +71,9 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Sign in / unlock',
     titleAr: 'تسجيل الدخول',
     bodyEn:
-      'Open Admin (or Staff unlock on Home). Prefer Google Auth if configured, or enter PROCESS_SECRET. Then expand Staff tools in the top bar.',
+      'Open Admin (or Staff unlock on Home). Prefer Google Auth if configured, or enter PROCESS_SECRET. On Admin you get the 6-step monthly path and the Reports hub (one-click PDFs). Then expand Staff tools in the top bar.',
     bodyAr:
-      'افتح Admin أو قفل التشغيل من الرئيسية. يُفضّل Google، أو كلمة سر التشغيل. ثم افتح أدوات التشغيل في الشريط العلوي.',
+      'افتح Admin أو قفل التشغيل من الرئيسية. يُفضّل Google، أو كلمة سر التشغيل. في Admin: المسار الستة ومركز التقارير (PDF بنقرة). ثم افتح أدوات التشغيل في الشريط العلوي.',
     href: '/admin',
     cta: 'Open Admin',
     mock: 'unlock',
@@ -84,8 +84,9 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Queue',
     titleAr: 'الطابور',
     bodyEn:
-      'Keep filter on Waiting. Tap Process queue (match + enroll + claim drafts). Then go to Claims.',
-    bodyAr: 'اترك التصفية على Waiting. اضغط معالجة الطابور ثم انتقل للمطالبات.',
+      'Keep filter on Waiting. Tap Process queue (match + enroll + claim drafts). Export PDF of the queue if you need a printable list. Then go to Claims.',
+    bodyAr:
+      'اترك التصفية على Waiting. اضغط معالجة الطابور. صدّر PDF للطابور إن لزم. ثم انتقل للمطالبات.',
     href: '/intake-ops',
     cta: 'Open Queue',
     mock: 'queue',
@@ -95,8 +96,10 @@ const STAFF_STEPS: Step[] = [
     id: 'staff-2',
     titleEn: 'Claims',
     titleAr: 'المطالبات',
-    bodyEn: 'Open Drafts, check totals, Submit each claim, then Pharmacy.',
-    bodyAr: 'افتح المسودات، راجع المبالغ، Submit، ثم الصيدلية.',
+    bodyEn:
+      'Open Drafts, check totals, Submit each claim. Use Export PDF on the page when you need a paper trail. Then Pharmacy.',
+    bodyAr:
+      'افتح المسودات، راجع المبالغ، Submit. استخدم تصدير PDF عند الحاجة. ثم الصيدلية.',
     href: '/claims',
     cta: 'Open Claims',
     mock: 'claims',
@@ -107,9 +110,9 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Pharmacy',
     titleAr: 'الصيدلية',
     bodyEn:
-      'Choose Available at EVA or Not at EVA. Download period CSV for each route. Check safety flags before bulk dispense. For a full active-line cut (not only this period), use EVA split.',
+      'Choose Available at EVA or Not at EVA. Download period CSV for each route (and PDF where shown). Check safety flags before bulk dispense. For a full active-line cut, use EVA split.',
     bodyAr:
-      'اختر متوفر في إيفا أو غير متوفر. حمّل CSV للشهر. راجع السلامة قبل الصرف. للقطع الكامل من البرامج النشطة استخدم تقسيم إيفا.',
+      'اختر متوفر في إيفا أو غير متوفر. حمّل CSV/PDF للشهر. راجع السلامة قبل الصرف. للقطع الكامل استخدم تقسيم إيفا.',
     href: '/pharmacy',
     cta: 'Open Pharmacy',
     mock: 'pharmacy',
@@ -133,9 +136,9 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Programs',
     titleAr: 'البرامج',
     bodyEn:
-      'Search enrollments by name or code. Open a program for meds, care-line, and (if enabled by management) WHO needs assessment + AI coach. High-risk rows sort first when assessment is on.',
+      'Search enrollments by name or code. Open a program for meds, care-line, and (if enabled by management) WHO needs assessment + AI coach. Export PDF of the list when needed.',
     bodyAr:
-      'ابحث بالاسم أو الكود. افتح البرنامج للأدوية وخط الرعاية، وتقييم الاحتياج ومدرب الالتزام إن فعّلتهما الإدارة.',
+      'ابحث بالاسم أو الكود. افتح البرنامج للأدوية وخط الرعاية. صدّر PDF للقائمة عند الحاجة.',
     href: '/programs',
     cta: 'Open Programs',
     mock: 'none',
@@ -146,8 +149,9 @@ const STAFF_STEPS: Step[] = [
     titleEn: 'Refills',
     titleAr: 'الصرف الشهري',
     bodyEn:
-      'Generate this month’s cycles, review each cycle, then return to Pharmacy for CSV if needed.',
-    bodyAr: 'ولّد دورات الشهر، راجع كل دورة، ثم عد للصيدلية للتصدير إن لزم.',
+      'Generate this month’s cycles, review each cycle, export PDF of the period, then return to Pharmacy for CSV if needed.',
+    bodyAr:
+      'ولّد دورات الشهر، راجع كل دورة، صدّر PDF للفترة، ثم عد للصيدلية للتصدير إن لزم.',
     href: '/refills',
     cta: 'Open Refills',
     mock: 'none',
@@ -189,7 +193,7 @@ const MORE_TOOLS = [
     href: '/reports',
     title: 'Reports',
     titleAr: 'التقارير',
-    body: 'Spend and enrollment summaries.',
+    body: 'Monthly + chronic catalog · CSV and PDF. Admin has a Reports hub.',
   },
   {
     href: '/status',
@@ -286,7 +290,8 @@ export default function GuidePage() {
           </p>
           <p className="text-sm text-slate-500 max-w-lg mx-auto">
             Submit → track status → open your profile for renewals and replies. Staff follow Queue →
-            Claims → Pharmacy → EVA → Programs → Refills. Public demo: /demo.
+            Claims → Pharmacy → EVA → Programs → Refills. PDFs from Admin Reports hub or each
+            page. Public demo: /demo.
           </p>
         </header>
 
@@ -371,7 +376,7 @@ export default function GuidePage() {
               لفريق التشغيل — نفس الشريط المرقّم في الصفحات
             </p>
             <p className="mt-3 text-xs sm:text-sm font-semibold text-violet-900">
-              Admin → Queue → Claims → Pharmacy → EVA split → Programs → Refills
+              Admin → Queue → Claims → Pharmacy → EVA → Programs → Refills
             </p>
           </div>
 
@@ -380,6 +385,45 @@ export default function GuidePage() {
               <StepCard key={s.id} s={s} accent="violet" />
             ))}
           </ol>
+
+          <div
+            id="reports-hub"
+            className="rounded-2xl border-2 border-violet-300 bg-white/95 p-5 space-y-3 scroll-mt-28"
+          >
+            <h3 className="font-semibold text-violet-950">
+              Reports hub · مركز التقارير
+            </h3>
+            <p className="text-sm text-slate-600">
+              On <Link href="/admin" className="font-semibold text-violet-800 underline">Admin</Link>{' '}
+              open the violet <strong>Reports hub</strong> for one-click printable PDFs: ops summary,
+              staff activity report, org requests, monthly meds, chronic catalog, and queue. Or go to{' '}
+              <Link href="/reports" className="font-semibold text-violet-800 underline">
+                /reports
+              </Link>{' '}
+              for monthly / chronic tabs (CSV + PDF).
+            </p>
+            <p className="text-sm text-slate-600" dir="rtl">
+              من Admin → مركز التقارير: ملخص التشغيل، تقرير النشاط، طلبات المؤسسات، الصرف الشهري،
+              الكتالوج المزمن، والطابور. أو صفحة التقارير CSV وPDF.
+            </p>
+            <p className="text-xs text-slate-500">
+              Tip: every PDF opens in a new tab — use the browser print dialog → <strong>Save as PDF</strong>.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/admin"
+                className="rounded-xl bg-violet-700 px-3.5 py-2 text-xs font-semibold text-white hover:bg-violet-800"
+              >
+                Admin hub →
+              </Link>
+              <Link
+                href="/reports"
+                className="rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2 text-xs font-semibold text-violet-900"
+              >
+                Reports page →
+              </Link>
+            </div>
+          </div>
         </section>
 
         <section id="management" className="space-y-4 scroll-mt-28">
