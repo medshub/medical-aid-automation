@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 type RunResult = {
@@ -14,9 +14,43 @@ type RunResult = {
   error?: string;
 };
 
+type LastRun = {
+  at: string;
+  actor: string | null;
+  period?: string;
+  ok?: boolean;
+};
+
 export function MonthlyRunPanel() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RunResult | null>(null);
+  const [lastRun, setLastRun] = useState<LastRun | null>(null);
+
+  const loadLast = useCallback(async () => {
+    try {
+      const res = await fetch(
+        '/api/admin/audit?action=ops.monthly_run&limit=1',
+        { credentials: 'include' }
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      const ev = (data.events || [])[0];
+      if (!ev) return;
+      const meta = (ev.meta || {}) as Record<string, unknown>;
+      setLastRun({
+        at: String(ev.at || '').replace('T', ' ').slice(0, 19),
+        actor: ev.actor,
+        period: meta.period ? String(meta.period) : undefined,
+        ok: meta.ok !== false,
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    loadLast();
+  }, [loadLast]);
 
   async function run(dryRun: boolean) {
     setLoading(true);
@@ -33,6 +67,7 @@ export function MonthlyRunPanel() {
         setResult({ error: data.error || 'Run failed', ok: false });
       } else {
         setResult(data);
+        if (!dryRun) loadLast();
       }
     } catch (e: unknown) {
       setResult({
@@ -75,6 +110,15 @@ export function MonthlyRunPanel() {
           month's refills, and takes a report snapshot. Does{' '}
           <strong>not</strong> submit claims or dispense medicines.
         </p>
+        {lastRun && (
+          <p className="mt-2 text-[11px] text-emerald-800/90 rounded-lg bg-white/70 border border-emerald-200 px-2 py-1.5">
+            Last run:{' '}
+            <span className="font-mono">{lastRun.at}</span>
+            {lastRun.period ? ` · ${lastRun.period}` : ''}
+            {lastRun.actor ? ` · ${lastRun.actor}` : ''}
+            {lastRun.ok === false ? ' · failed' : ' · ok'}
+          </p>
+        )}
       </div>
 
       <button
@@ -86,9 +130,7 @@ export function MonthlyRunPanel() {
         {loading ? (
           <span>Running automation… · جاري التشغيل…</span>
         ) : (
-          <span>
-            ▶ Start automation · ابدأ الأتمتة
-          </span>
+          <span>▶ Start automation · ابدأ الأتمتة</span>
         )}
       </button>
 
