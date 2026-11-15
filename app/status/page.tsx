@@ -245,6 +245,16 @@ export default async function StatusPage() {
                 (Google or PROCESS_SECRET)
               </li>
               <li>
+                <Link
+                  href="/admin#start-automation"
+                  className="underline font-medium text-emerald-800"
+                >
+                  Start automation
+                </Link>{' '}
+                — safe batch: process queue + generate refills ·{' '}
+                <span dir="rtl">ابدأ الأتمتة</span>
+              </li>
+              <li>
                 <Link href="/intake-ops" className="underline font-medium">
                   1 Queue
                 </Link>{' '}
@@ -373,6 +383,9 @@ export default async function StatusPage() {
           <Link href="/guide" className="text-violet-700 hover:underline font-medium">
             How to use
           </Link>
+          <Link href="/admin#start-automation" className="text-emerald-700 hover:underline font-medium">
+            Start automation
+          </Link>
           <Link href="/admin" className="text-slate-700 hover:underline font-medium">
             Admin
           </Link>
@@ -397,10 +410,10 @@ export default async function StatusPage() {
             ← Home
           </Link>
           <Link
-            href="/intake-ops"
-            className="flex-1 rounded-xl bg-violet-700 py-3 text-center text-sm font-semibold text-white"
+            href="/admin#start-automation"
+            className="flex-1 rounded-xl bg-emerald-700 py-3 text-center text-sm font-semibold text-white"
           >
-            Queue →
+            Start automation →
           </Link>
         </div>
       </div>
