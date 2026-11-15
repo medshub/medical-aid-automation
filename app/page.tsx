@@ -230,9 +230,18 @@ export default function Home() {
             <span className="text-xs text-slate-400 group-open:hidden">tap to open</span>
             <span className="text-xs text-slate-400 hidden group-open:inline">close</span>
           </summary>
-          <div className="border-t border-slate-100 px-4 pb-4 pt-3 space-y-2">
+          <div className="border-t border-slate-100 px-4 pb-4 pt-3 space-y-3">
             <p className="text-xs text-slate-500 text-center">
               Queue → Claims → Pharmacy → EVA → Programs → Refills
+            </p>
+            <Link
+              href="/admin#start-automation"
+              className="block rounded-xl bg-emerald-700 px-4 py-3 text-center text-sm font-bold text-white hover:bg-emerald-800 shadow-md shadow-emerald-700/20"
+            >
+              ▶ Start automation · ابدأ الأتمتة
+            </Link>
+            <p className="text-[11px] text-slate-500 text-center">
+              Safe batch: process queue + refill generate · then Claims / Pharmacy
             </p>
             <Suspense
               fallback={
